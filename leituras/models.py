@@ -44,5 +44,12 @@ class Leitura(models.Model):
                                   f'não dá pra estar no {self.capitulo_atual}.'
             })
 
+    @property
+    def estrelas(self):
+        if self.nota is None:
+            return ''
+        return '★' * self.nota + '☆' * (5 - self.nota)
+
+
     def __str__(self):
         return f"{self.obra.titulo} - Capítulo {self.capitulo_atual} - Status: {self.status}"

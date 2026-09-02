@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Leituras</title>
+    <script>
+        // roda antes de pintar a tela, senao a pagina pisca clara antes de virar escura
+        document.documentElement.dataset.tema = localStorage.getItem('tema') || 'claro';
+    </script>
+    <link rel="stylesheet" href="{% static 'leituras/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'leituras/css/lista.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header class="topo">
+            <div>
+                <h1>Minhas leituras</h1>
+                <p class="subtitulo">{{ leituras|length }} leitura{{ leituras|length|pluralize }} na estante</p>
+            </div>
+            <button id="botao-tema" class="botao-tema" type="button" aria-label="Alternar tema">🌙</button>
+        </header>
+
+        <ul class="lista">
+        {% for leitura in leituras %}
+            <li class="item">
+                <div class="item__cabecalho">
+                    <a class="item__titulo" href="{{ leitura.obra.link }}" target="_blank" rel="noopener">{{ leitura.obra.titulo }}</a>
+                    <span class="selo selo--{{ leitura.status|lower }}">{{ leitura.status }}</span>
+                </div>
+
+                <p class="item__meta">{{ leitura.obra.autor }} · {{ leitura.obra.get_tipo_display }} · {{ leitura.obra.plataforma }}</p>
+
+                {% if leitura.obra.total_capitulos %}
+                    <div class="barra">
+                        <div class="barra__cheio" style="width: {% widthratio leitura.capitulo_atual leitura.obra.total_capitulos 100 %}%"></div>
+                    </div>
+                {% endif %}
+
+                <div class="item__rodape">
+                    {% if leitura.obra.total_capitulos %}
+                        <span>cap {{ leitura.capitulo_atual }} de {{ leitura.obra.total_capitulos }}</span>
+                    {% else %}
+                        <span>cap {{ leitura.capitulo_atual }} — total desconhecido</span>
+                    {% endif %}
+
+                    <span class="estrelas">{{ leitura.estrelas }}</span>
+
+                    <form class="controles" method="post" action="{% url 'mover-capitulo' leitura.pk %}">
+                        {% csrf_token %}
+                        {% if leitura.capitulo_atual > 0 %}
+                            <button class="botao-passo" type="submit" name="passo" value="-1" title="Voltar um capítulo">-1</button>
+                        {% endif %}
+                        {% if not leitura.obra.total_capitulos or leitura.capitulo_atual < leitura.obra.total_capitulos %}
+                            <button class="botao-passo botao-passo--mais" type="submit" name="passo" value="1" title="Avançar um capítulo">+1</button>
+                        {% else %}
+                            <span class="fim">fim</span>
+                        {% endif %}
+                    </form>
+                </div>
+            </li>
+        {% empty %}
+            <li class="vazio">Nada por aqui ainda.</li>
+        {% endfor %}
+        </ul>
+    </div>
+
+    <script src="{% static 'leituras/js/tema.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+/*---------Paleta Clara (Padrao)----------*/
+:root{
+    color-scheme: light;
+    --fundo:#f5f3fb;
+    --superficie: #ffffff;
+    --borda: #e5e1f0;
+    --texto: #1f1b2e;
+    --texto-fraco: #6d6683;
+    --destaque: #7c4dff;
+    --destaque-fraco: #ece5ff;
+    --lendo: #17845a;
+    --pausado: #a9700a;
+    --finalizado: #2f5fd0;
+    --abandonado: #a83f60;
+    --sombra: 0 1px 2px rgba(31,27,46,.06), 0 8px 24px rgba(31,27,46,.06);       
+
+}
+/* ---------- paleta escura ---------- */
+[data-tema="escuro"] {
+    color-scheme: dark;
+    --fundo: #14121c;
+    --superficie: #1e1b2b;
+    --borda: #302b42;
+    --texto: #e6e2f2;
+    --texto-fraco: #9c96b0;
+    --destaque: #b49bff;
+    --destaque-fraco: #2b2440;
+    --lendo: #5cc79a;
+    --pausado: #e0b25f;
+    --finalizado: #86a9ff;
+    --abandonado: #e28ba9;
+    --sombra: 0 1px 2px rgba(0,0,0,.5);
+}
+
+/* ---------- base ---------- */
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 32px 20px 64px;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    transition: background-color .2s ease, color .2s ease;
+}
+
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+/* ---------- topo ---------- */
+.topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+.topo h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    letter-spacing: -.02em;
+}
+
+.subtitulo {
+    margin: 4px 0 0;
+    color: var(--texto-fraco);
+    font-size: .875rem;
+}
+
+.botao-tema {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--borda);
+    border-radius: 50%;
+    background: var(--superficie);
+    color: var(--texto);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color .2s ease, transform .1s ease;
+}
+
+.botao-tema:hover { border-color: var(--destaque); }
+.botao-tema:active { transform: scale(.92); }
