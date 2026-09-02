@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
@@ -23,6 +24,18 @@ class Leitura(models.Model):
         null=True, blank=True,
         validators=[MinValueValidator(1), MaxValueValidator(5)],
     )
+
+    def clean(self):
+        # obra_id em vez de obra: se a FK ainda nao foi preenchida, ler
+        # self.obra estoura RelatedObjectDoesNotExist em vez de dar None.
+        if not self.obra_id or self.capitulo_atual is None:
+            return
+        total = self.obra.total_capitulos
+        if total is not None and self.capitulo_atual > total:
+            raise ValidationError({
+                'capitulo_atual': f'"{self.obra.titulo}" tem {total} capítulos — '
+                                  f'não dá pra estar no {self.capitulo_atual}.'
+            })
 
     def __str__(self):
         return f"{self.obra.titulo} - Capítulo {self.capitulo_atual} - Status: {self.status}"
