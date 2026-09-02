@@ -1,0 +1,31 @@
+# Banco de dados local -- tem sua lista de leitura e o hash da sua senha
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+
+# Segredos -- SECRET_KEY, credenciais
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+
+# Ambiente virtual
+venv/
+.venv/
+env/
+
+# Django
+/staticfiles/
+/media/
+*.log
+
+# Editor / SO
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
