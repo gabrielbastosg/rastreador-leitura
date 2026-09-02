@@ -3,6 +3,7 @@ from django.views.decorators.http import require_POST
 from rest_framework import viewsets
 from .models import Obra, Leitura
 from .serializers import ObraSerializer, LeituraSerializer
+from django.utils import timezone
 # Create your views here.
 
 class ObraViewSet(viewsets.ModelViewSet):
@@ -23,7 +24,19 @@ def mover_capitulo(request, pk):
     passo = 1 if request.POST.get('passo') == '1' else -1
     novo = leitura.capitulo_atual + passo
     total = leitura.obra.total_capitulos
-    if novo >= 0 and (total is None or novo <= total):
-        leitura.capitulo_atual = novo
-        leitura.save()
+
+    if novo < 0 or (total is not None and novo > total):
+        return redirect('lista-leituras')
+
+    leitura.capitulo_atual = novo
+
+    if total is not None:
+        if novo == total:
+            leitura.status = 'Finalizado'
+            leitura.encerrado_em = timezone.localdate()
+        elif leitura.status == 'Finalizado':
+            leitura.status = 'Lendo'
+            leitura.encerrado_em = None
+
+    leitura.save()
     return redirect('lista-leituras')
