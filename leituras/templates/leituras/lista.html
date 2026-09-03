@@ -19,7 +19,10 @@
                 <h1>Minhas leituras</h1>
                 <p class="subtitulo">{{ leituras|length }} leitura{{ leituras|length|pluralize }} na estante</p>
             </div>
-            <button id="botao-tema" class="botao-tema" type="button" aria-label="Alternar tema">🌙</button>
+            <div class="acoes">
+                <a class="botao-novo" href="{% url 'nova-obra' %}">+ nova obra</a>
+                <button id="botao-tema" class="botao-tema" type="button" aria-label="Alternar tema">🌙</button>
+            </div>
         </header>
 
         <ul class="lista">

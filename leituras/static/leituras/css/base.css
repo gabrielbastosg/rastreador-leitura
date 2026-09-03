@@ -87,3 +87,23 @@ body {
 
 .botao-tema:hover { border-color: var(--destaque); }
 .botao-tema:active { transform: scale(.92); }
+
+/* ---------- acoes do topo ---------- */
+.acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.botao-novo {
+    padding: 9px 16px;
+    border-radius: 10px;
+    background: var(--destaque);
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.botao-novo:hover { filter: brightness(1.08); }

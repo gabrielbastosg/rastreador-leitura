@@ -17,7 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from leituras.views import ObraViewSet, LeituraViewSet, lista_leituras, mover_capitulo
+from leituras.views import ObraViewSet, LeituraViewSet, lista_leituras, mover_capitulo,nova_obra
+
 
 router = DefaultRouter()
 router.register('obras', ObraViewSet)
@@ -28,4 +29,5 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('', lista_leituras, name='lista-leituras'),
     path('leituras/<int:pk>/mover/', mover_capitulo, name='mover-capitulo'),
+    path('obras/nova/', nova_obra, name='nova-obra'),
 ]

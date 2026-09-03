@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova obra</title>
+    <script>
+        document.documentElement.dataset.tema = localStorage.getItem('tema') || 'claro';
+    </script>
+    <link rel="stylesheet" href="{% static 'leituras/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'leituras/css/form.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header class="topo">
+            <div>
+                <a class="voltar" href="{% url 'lista-leituras' %}">← estante</a>
+                <h1>Nova obra</h1>
+            </div>
+            <button id="botao-tema" class="botao-tema" type="button" aria-label="Alternar tema">🌙</button>
+        </header>
+
+        <form class="formulario" method="post" novalidate>
+            {% csrf_token %}
+
+            <h2 class="secao">A obra</h2>
+            {% include 'leituras/_campos.html' with form=form_obra %}
+
+            <h2 class="secao">Onde você está</h2>
+            {% include 'leituras/_campos.html' with form=form_leitura %}
+            
+            <button class="botao-salvar" type="submit">Salvar</button>
+        </form>
+    </div>
+
+    <script src="{% static 'leituras/js/tema.js' %}"></script>
+</body>
+</html>

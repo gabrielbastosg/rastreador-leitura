@@ -1,0 +1,83 @@
+/* ---------- voltar ---------- */
+.voltar {
+    display: inline-block;
+    margin-bottom: 4px;
+    color: var(--texto-fraco);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.voltar:hover { color: var(--destaque); }
+
+/* ---------- formulario ---------- */
+.formulario {
+    background: var(--superficie);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    box-shadow: var(--sombra);
+    padding: 24px;
+    display: grid;
+    gap: 18px;
+}
+
+.campo { display: grid; gap: 6px; }
+
+.campo label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: var(--fundo);
+    color: var(--texto);
+    font: inherit;
+}
+
+.campo input:focus,
+.campo select:focus {
+    outline: 2px solid var(--destaque);
+    outline-offset: 1px;
+    border-color: var(--destaque);
+}
+
+.campo__ajuda {
+    margin: 0;
+    font-size: 13px;
+    color: var(--texto-fraco);
+}
+
+.campo__erro {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--abandonado);
+}
+
+/* ---------- salvar ---------- */
+.botao-salvar {
+    justify-self: start;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 10px;
+    background: var(--destaque);
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-salvar:hover { filter: brightness(1.08); }
+.botao-salvar:active { transform: scale(.98); }
+
+.secao {
+    margin: 0;
+    font-size: 15px;
+    color: var(--texto-fraco);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
