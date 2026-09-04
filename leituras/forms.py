@@ -28,3 +28,4 @@ class LeituraForm(forms.ModelForm):
         help_texts = {
             'nota': 'De 1 a 5. Pode deixar vazio e dar depois.',
         }
+

@@ -87,3 +87,29 @@ def nova_obra(request):
         'form_obra': form_obra,
         'form_leitura': form_leitura,
     })
+
+def editar_leitura(request, pk):
+    leitura = get_object_or_404(Leitura, pk=pk)
+    obra = leitura.obra
+    if request.method == 'POST':
+        form_obra = ObraForm(request.POST, instance=obra)
+        form_leitura = LeituraForm(request.POST, instance=leitura)
+
+        obra_ok = form_obra.is_valid()
+        leitura_ok = form_leitura.is_valid()
+
+        if obra_ok and leitura_ok:
+            # atomic porque sao dois save(): um erro no segundo deixaria a
+            # obra alterada e a leitura nao.
+            with transaction.atomic():
+                form_obra.save()
+                form_leitura.save()
+            return redirect('lista-leituras')
+    else:
+        form_obra = ObraForm(instance=obra)
+        form_leitura = LeituraForm(instance=leitura)
+    
+    return render(request, 'leituras/form_obra.html', {
+        'form_obra': form_obra,
+        'form_leitura': form_leitura,
+        })

@@ -148,6 +148,27 @@
 
 .botao-passo:active { transform: scale(.94); }
 
+.botao-editar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 30px;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    color: var(--texto-fraco);
+    text-decoration: none;
+    font-size: .95rem;
+    transition: border-color .15s ease, color .15s ease, transform .1s ease;
+}
+
+.botao-editar:hover {
+    border-color: var(--destaque);
+    color: var(--destaque);
+}
+
+.botao-editar:active { transform: scale(.94); }
+
 .botao-passo--mais {
     border-color: color-mix(in srgb, var(--destaque) 40%, transparent);
     background: color-mix(in srgb, var(--destaque) 12%, transparent);
