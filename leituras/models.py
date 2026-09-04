@@ -6,19 +6,37 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Obra(models.Model):
     TIPOS=[
         ('Fanfic','Fanfic'),
-        ('Manga','Manga'),
+        ('Manga','Mangá'),
         ('Manhwa','Manhwa'),
-        ('Webtoon','Webtoon')
+        ('Webtoon','Webtoon'),
+        ('HQ', 'HQ'),
+        ('Materia', 'Matéria'),
+        ('Light Novel', 'Light Novel')
     ]
+
+    GRUPOS = {
+        'Fanfic': 'Leitura de fã',
+        'Manga': 'Quadrinhos',
+        'Manhwa': 'Quadrinhos',
+        'Webtoon': 'Quadrinhos',
+        'HQ': 'Quadrinhos',
+        'Light Novel': 'Livros',
+        'Materia': 'Matéria',
+    }
+
     tipo = models.CharField(max_length=20, choices=TIPOS,default='Fanfic')
     titulo = models.CharField(max_length=200)
     autor = models.CharField(max_length=200)
     plataforma = models.CharField(max_length=200)
-    link = models.URLField(unique=True)
+    link = models.URLField(unique=True, null=True, blank=True)
     total_capitulos = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.titulo
+        
+    @property
+    def grupo(self):
+        return self.GRUPOS.get(self.tipo, 'Outros')
     
 class Leitura(models.Model):
     obra = models.ForeignKey(Obra, on_delete=models.CASCADE)

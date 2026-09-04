@@ -1,3 +1,30 @@
+/* ---------- grupos ---------- */
+.grupo {
+    margin-bottom: 32px;
+}
+
+.grupo__titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--texto-fraco);
+}
+
+.grupo__contagem {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--destaque-fraco);
+    color: var(--destaque);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
 .lista {
     list-style: none;
     margin: 0;

@@ -19,7 +19,18 @@ class LeituraViewSet(viewsets.ModelViewSet):
 
 def lista_leituras(request):
     leituras = Leitura.objects.select_related('obra').order_by('-atualizado_em')
-    return render(request, 'leituras/lista.html', {'leituras': leituras})
+    grupos = {}
+    for leitura in leituras:
+        grupos.setdefault(leitura.obra.grupo, []).append(leitura)
+    # a ordem das secoes segue a ordem do GRUPOS no modelo, e so entra
+    # secao que tem leitura -- por isso o "if nome in grupos"  
+    ordem = list(dict.fromkeys(Obra.GRUPOS.values())) + ['Outros']
+    secoes = [(nome, grupos[nome]) for nome in ordem if nome in grupos]
+
+    return render(request, 'leituras/lista.html', {
+        'leituras': leituras,
+        'secoes': secoes,
+    })
 
 @require_POST
 def mover_capitulo(request, pk):

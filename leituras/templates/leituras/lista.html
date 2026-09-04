@@ -25,8 +25,11 @@
             </div>
         </header>
 
-        <ul class="lista">
-        {% for leitura in leituras %}
+        {% for nome, itens in secoes %}
+        <section class="grupo">
+            <h2 class="grupo__titulo">{{ nome }} <span class="grupo__contagem">{{ itens|length }}</span></h2>
+            <ul class="lista">
+            {% for leitura in itens %}
             <li class="item">
                 <div class="item__cabecalho">
                     <a class="item__titulo" href="{{ leitura.obra.link }}" target="_blank" rel="noopener">{{ leitura.obra.titulo }}</a>
@@ -63,10 +66,12 @@
                     </form>
                 </div>
             </li>
+            {% endfor %}
+            </ul>
+        </section>
         {% empty %}
-            <li class="vazio">Nada por aqui ainda.</li>
+            <p class="vazio">Nada por aqui ainda.</p>
         {% endfor %}
-        </ul>
     </div>
 
     <script src="{% static 'leituras/js/tema.js' %}"></script>
