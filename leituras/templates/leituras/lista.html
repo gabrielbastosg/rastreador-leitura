@@ -24,6 +24,7 @@
                 <button id="botao-tema" class="botao-tema" type="button" aria-label="Alternar tema">🌙</button>
             </div>
         </header>
+        <input id="busca" class="busca" type="search" placeholder="Buscar por título, autor, plataforma...">
 
         {% for nome, itens in secoes %}
         <section class="grupo">
@@ -75,5 +76,6 @@
     </div>
 
     <script src="{% static 'leituras/js/tema.js' %}"></script>
+    <script src="{% static 'leituras/js/busca.js' %}"></script>
 </body>
 </html>

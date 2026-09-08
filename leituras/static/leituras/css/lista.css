@@ -1,3 +1,25 @@
+/*------------- Busca ----------------*/
+.busca {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 24px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--superficie);
+    color: var(--texto);
+    font: inherit;
+    transition: border-color .2s ease;
+}
+
+.busca::placeholder {
+    color: var(--texto-fraco);
+}
+
+.busca:focus {
+    outline: none;
+    border-color: var(--destaque);
+}
+
 /* ---------- grupos ---------- */
 .grupo {
     margin-bottom: 32px;
