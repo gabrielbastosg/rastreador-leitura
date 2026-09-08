@@ -127,6 +127,9 @@ convidar os dois a discordarem — uma obra marcada `Manhwa` com grupo `Matéria
 e nenhum jeito de saber qual está certo. A ordem das seções na tela também vem
 desse dicionário, então não existe uma segunda lista pra ficar pra trás.
 
+As onze decisões do projeto, cada uma em pergunta e resposta com o lugar onde
+mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
+
 ## Testes
 
 ```bash
