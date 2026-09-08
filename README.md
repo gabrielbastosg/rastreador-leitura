@@ -24,6 +24,11 @@ existe campo `grupo` no banco.*
 - **Cadastro numa tela só** (`/obras/nova/`) — obra e leitura no mesmo POST,
   dentro de uma transação: capítulo inválido não deixa obra órfã no banco.
 - **Botões `+1` / `-1`** direto no card: marca o capítulo sem sair da página.
+- **Edição pela estante** (`/leituras/<id>/editar/`) — o botão ✎ abre obra e
+  leitura no mesmo formulário, salvos numa transação. Sem passar pelo admin.
+- **Busca instantânea** — a caixa no topo filtra por título, autor, tipo ou
+  plataforma enquanto você digita, e esconde a seção que ficou vazia. Só
+  JavaScript, sem ida ao servidor.
 - **Status que se corrige sozinho** — chegou no último capítulo vira
   `Finalizado` e grava a data; voltou atrás, volta pra `Lendo`.
 - **Tema claro/escuro**, guardado no navegador.
@@ -58,8 +63,9 @@ Nunca vai pro Git — o modelo está no `.env.example`.
 
 | Rota | O que faz |
 |---|---|
-| `/` | estante — cards agrupados, `+1`/`-1`, tema claro/escuro |
+| `/` | estante — cards agrupados, busca, `+1`/`-1`, tema claro/escuro |
 | `/obras/nova/` | cadastro de obra + leitura |
+| `/leituras/<id>/editar/` | edição de obra + leitura na mesma tela |
 | `/admin/` | admin do Django |
 
 ## API
@@ -121,9 +127,30 @@ convidar os dois a discordarem — uma obra marcada `Manhwa` com grupo `Matéria
 e nenhum jeito de saber qual está certo. A ordem das seções na tela também vem
 desse dicionário, então não existe uma segunda lista pra ficar pra trás.
 
+## Testes
+
+```bash
+python manage.py test leituras
+```
+
+Treze testes, sem dependência externa — o Django cria e destrói um banco próprio
+a cada execução.
+
+Cobrem o que **decide** alguma coisa:
+
+- **`Obra.grupo`** — o tipo mapeado e o tipo que não está no dicionário.
+- **`Leitura.clean()`** — capítulo acima do total, obra sem total (fanfic em
+  andamento) e capítulo exatamente no total, que é a fronteira da regra.
+- **`Leitura.estrelas`** — sem nota, nota no meio e nota cheia.
+- **A view `mover_capitulo` inteira** — o avanço, a finalização automática ao
+  bater no total, o teto, o piso e a recusa de `GET` pelo `@require_POST`.
+
+Ficaram de fora de propósito `__str__` e o admin: não decidem nada, não têm como
+estar errados.
+
 ## Próximos passos
 
 - Filtros na API com `django-filter` (status, tipo, plataforma)
 - Autenticação — hoje a API é aberta, é projeto de uso local
-- Testes automatizados
-- Filtro por grupo na estante, quando a lista crescer
+- Testes das views de cadastro e edição (`nova_obra` e `editar_leitura`)
+- Contagem do grupo acompanhando a busca, e aviso quando nada é encontrado
