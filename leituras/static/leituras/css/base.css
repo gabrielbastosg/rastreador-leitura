@@ -105,6 +105,46 @@ body {
 .botao-tema:hover { border-color: var(--destaque); }
 .botao-tema:active { transform: scale(.92); }
 
+/* ---------- menu de tema ---------- */
+.tema {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.tema__menu {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    z-index: 10;
+    min-width: 150px;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--superficie);
+    box-shadow: var(--sombra);
+}
+
+.tema__opcao {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--texto);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tema__opcao:hover { background: var(--destaque-fraco); }
+
+.tema__opcao[aria-current="true"]::after {
+    content: ' ✓';
+    color: var(--destaque);
+}
 /* ---------- acoes do topo ---------- */
 .acoes {
     display: flex;

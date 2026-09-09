@@ -21,7 +21,15 @@
             </div>
             <div class="acoes">
                 <a class="botao-novo" href="{% url 'nova-obra' %}">+ nova obra</a>
-                <button id="botao-tema" class="botao-tema" type="button" aria-label="Alternar tema">🌙</button>
+                <div class="tema">
+                    <button id="botao-tema" class="botao-tema" type="button"
+                            aria-haspopup="true" aria-expanded="false" aria-label="Escolher tema">🌙</button>
+                    <ul class="tema__menu" id="menu-tema" hidden>
+                        <li><button type="button" class="tema__opcao" data-tema-opcao="claro">☀️ Claro</button></li>
+                        <li><button type="button" class="tema__opcao" data-tema-opcao="escuro">🌙 Escuro</button></li>
+                        <li><button type="button" class="tema__opcao" data-tema-opcao="sepia">📜 Sépia</button></li>
+                    </ul>
+                </div>
             </div>
         </header>
         <input id="busca" class="busca" type="search" placeholder="Buscar por título, autor, plataforma...">
