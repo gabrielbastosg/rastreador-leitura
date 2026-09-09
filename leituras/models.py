@@ -45,6 +45,7 @@ class Leitura(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     encerrado_em = models.DateField(null=True, blank=True)
     atualizado_em = models.DateTimeField(auto_now=True)
+    avancado_em = models.DateTimeField(null=True, blank=True)
     nota = models.PositiveSmallIntegerField(
         null=True, blank=True,
         validators=[MinValueValidator(1), MaxValueValidator(5)],

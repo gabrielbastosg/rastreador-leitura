@@ -7,6 +7,7 @@ from django.utils import timezone
 from .forms import ObraForm, LeituraForm
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.db.models import F
 # Create your views here.
 
 class ObraViewSet(viewsets.ModelViewSet):
@@ -18,7 +19,9 @@ class LeituraViewSet(viewsets.ModelViewSet):
     serializer_class = LeituraSerializer
 
 def lista_leituras(request):
-    leituras = Leitura.objects.select_related('obra').order_by('-atualizado_em')
+    leituras = Leitura.objects.select_related('obra').order_by(
+        F('avancado_em').desc(nulls_last=True), '-atualizado_em'
+    )
     grupos = {}
     for leitura in leituras:
         grupos.setdefault(leitura.obra.grupo, []).append(leitura)
@@ -43,6 +46,7 @@ def mover_capitulo(request, pk):
         return redirect('lista-leituras')
 
     leitura.capitulo_atual = novo
+    leitura.avancado_em = timezone.now()
 
     if total is not None:
         if novo == total:
@@ -73,6 +77,7 @@ def nova_obra(request):
                     obra = form_obra.save()
                     leitura = form_leitura.save(commit=False)
                     leitura.obra = obra
+                    leitura.avancado_em = timezone.now()
                     leitura.full_clean(exclude=['obra'])
                     leitura.save()
             except ValidationError as erro:
@@ -103,6 +108,8 @@ def editar_leitura(request, pk):
             # obra alterada e a leitura nao.
             with transaction.atomic():
                 form_obra.save()
+                if 'capitulo_atual' in form_leitura.changed_data:
+                    leitura.avancado_em = timezone.now()
                 form_leitura.save()
             return redirect('lista-leituras')
     else:
