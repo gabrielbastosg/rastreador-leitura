@@ -1,12 +1,15 @@
 const raiz = document.documentElement;
 const botao = document.getElementById('botao-tema');
+const TEMAS = ['claro','escuro','sepia'];
+const ICONES = { claro: '🌙', escuro: '📜', sepia: '☀️' };
 
 function pintarBotao() {
-    botao.textContent = raiz.dataset.tema === 'escuro' ? '☀️' : '🌙';
+    botao.textContent = ICONES[raiz.dataset.tema];
 }
 
 botao.addEventListener('click', () => {
-    raiz.dataset.tema = raiz.dataset.tema === 'escuro' ? 'claro' : 'escuro';
+    const proximo = (TEMAS.indexOf(raiz.dataset.tema) + 1) % TEMAS.length;
+    raiz.dataset.tema = TEMAS[proximo];
     localStorage.setItem('tema', raiz.dataset.tema);
     pintarBotao();
 });

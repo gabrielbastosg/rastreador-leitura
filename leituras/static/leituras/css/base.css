@@ -32,6 +32,23 @@
     --sombra: 0 1px 2px rgba(0,0,0,.5);
 }
 
+/* ---------- paleta sepia (papel) ---------- */
+[data-tema="sepia"] {
+    color-scheme: light;
+    --fundo: #f4ecd8;
+    --superficie: #fbf5e6;
+    --borda: #e0d3b8;
+    --texto: #4a3a28;
+    --texto-fraco: #8a7357;
+    --destaque: #9a5b2d;
+    --destaque-fraco: #efe0c8;
+    --lendo: #4a7c48;
+    --pausado: #a9700a;
+    --finalizado: #4a6fa5;
+    --abandonado: #a34f4f;
+    --sombra: 0 1px 2px rgba(74,58,40,.08), 0 8px 24px rgba(74,58,40,.08);
+}
+
 /* ---------- base ---------- */
 * { box-sizing: border-box; }
 
