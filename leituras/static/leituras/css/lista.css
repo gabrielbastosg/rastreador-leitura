@@ -84,7 +84,7 @@
     text-decoration: none;
 }
 
-.item__titulo:hover {
+a.item__titulo:hover {
     color: var(--destaque);
     text-decoration: underline;
 }

@@ -41,7 +41,11 @@
             {% for leitura in itens %}
             <li class="item">
                 <div class="item__cabecalho">
-                    <a class="item__titulo" href="{{ leitura.obra.link }}" target="_blank" rel="noopener">{{ leitura.obra.titulo }}</a>
+                    {% if leitura.obra.link %}
+                        <a class="item__titulo" href="{{ leitura.obra.link }}" target="_blank" rel="noopener">{{ leitura.obra.titulo }}</a>
+                    {% else %}
+                        <span class="item__titulo">{{ leitura.obra.titulo }}</span>
+                    {% endif %}
                     <span class="selo selo--{{ leitura.status|lower }}">{{ leitura.status }}</span>
                 </div>
 
