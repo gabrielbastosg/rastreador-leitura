@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'leituras',
+    'contas',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +125,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'login'              # pra onde mandar quem tentou entrar sem estar logado
+LOGIN_REDIRECT_URL = 'lista-leituras'   # depois de logar, vai pra estante
+LOGOUT_REDIRECT_URL = 'login'     # depois de deslogar, vai pra login

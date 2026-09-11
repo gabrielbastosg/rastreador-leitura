@@ -157,3 +157,26 @@ estar errados.
 - Autenticação — hoje a API é aberta, é projeto de uso local
 - Testes das views de cadastro e edição (`nova_obra` e `editar_leitura`)
 - Contagem do grupo acompanhando a busca, e aviso quando nada é encontrado
+- Validador de senha exigindo pelo menos uma letra. Hoje o Django só recusa senha
+  **inteiramente numérica** (`NumericPasswordValidator`), então `1234567!` é aceita.
+  Exigir uma letra é regra comum em outros sites e precisaria de um validador próprio
+  no `AUTH_PASSWORD_VALIDATORS` — enquanto não existe, o texto de ajuda do formulário
+  descreve só o que é de fato validado.
+- Mover as rotas do `leituras` para um `leituras/urls.py` próprio, como no `contas`.
+  Hoje elas moram no `config/urls.py` e funcionam — a mudança é organização, não correção,
+  então vale pegar carona na próxima vez que o app for mexido, não parar para fazer sozinha.
+  **Regra adotada:** não mudar o que funciona, mas não repetir o padrão antigo em código novo.
+- `base.html` e diretório de templates do projeto. Hoje cada template repete o HTML inteiro
+  (`<head>`, script do tema, header com o menu de tema), e o `_campos.html` está duplicado entre
+  `leituras` e `contas` — cópia deliberada, para o app `contas` não depender do `leituras`.
+  A solução boa é um diretório de templates fora dos apps (`DIRS` no `TEMPLATES`) guardando
+  `base.html` e `_campos.html`: aí não é um app dependendo do outro, são os dois usando o comum.
+  **Regra adotada:** lógica se reaproveita; layout pequeno se copia — um parcial de apresentação
+  de 12 linhas não vale o acoplamento entre apps.
+- Separar os erros do campo de confirmação de senha, no cadastro. O `UserCreationForm` valida a
+  senha depois que os dois campos batem e pendura **tudo** em `password2` — tanto "esta senha é
+  muito curta" quanto "os dois campos de senha não correspondem". Na tela, os erros de regra de
+  senha aparecem embaixo de *Confirmação de senha*, e a pessoa não sabe qual campo corrigir.
+  O conserto é mover só os erros de validador para `password1`, deixando o de correspondência onde
+  está. Encontrado clicando no botão, não lendo código — nenhum teste pegaria, porque
+  tecnicamente funciona.

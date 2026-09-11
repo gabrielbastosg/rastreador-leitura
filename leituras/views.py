@@ -8,6 +8,8 @@ from .forms import ObraForm, LeituraForm
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import F
+from django.contrib.auth.decorators import login_required
+
 # Create your views here.
 
 class ObraViewSet(viewsets.ModelViewSet):
@@ -18,8 +20,9 @@ class LeituraViewSet(viewsets.ModelViewSet):
     queryset = Leitura.objects.all()
     serializer_class = LeituraSerializer
 
+@login_required
 def lista_leituras(request):
-    leituras = Leitura.objects.select_related('obra').order_by(
+    leituras = Leitura.objects.filter(obra__dono=request.user).select_related('obra').order_by(
         F('avancado_em').desc(nulls_last=True), '-atualizado_em'
     )
     grupos = {}
@@ -35,9 +38,10 @@ def lista_leituras(request):
         'secoes': secoes,
     })
 
+@login_required
 @require_POST
 def mover_capitulo(request, pk):
-    leitura = get_object_or_404(Leitura, pk=pk)
+    leitura = get_object_or_404(Leitura, pk=pk,obra__dono=request.user)
     passo = 1 if request.POST.get('passo') == '1' else -1
     novo = leitura.capitulo_atual + passo
     total = leitura.obra.total_capitulos
@@ -59,7 +63,7 @@ def mover_capitulo(request, pk):
     leitura.save()
     return redirect('lista-leituras')
 
-
+@login_required
 def nova_obra(request):
     if request.method == 'POST':
         form_obra = ObraForm(request.POST)
@@ -74,7 +78,9 @@ def nova_obra(request):
         if obra_ok and leitura_ok:
             try:
                 with transaction.atomic():
-                    obra = form_obra.save()
+                    obra = form_obra.save(commit=False)
+                    obra.dono= request.user
+                    obra.save()
                     leitura = form_leitura.save(commit=False)
                     leitura.obra = obra
                     leitura.avancado_em = timezone.now()
@@ -93,8 +99,9 @@ def nova_obra(request):
         'form_leitura': form_leitura,
     })
 
+@login_required
 def editar_leitura(request, pk):
-    leitura = get_object_or_404(Leitura, pk=pk)
+    leitura = get_object_or_404(Leitura, pk=pk,obra__dono=request.user)
     obra = leitura.obra
     if request.method == 'POST':
         form_obra = ObraForm(request.POST, instance=obra)

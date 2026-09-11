@@ -31,4 +31,5 @@ urlpatterns = [
     path('leituras/<int:pk>/mover/', mover_capitulo, name='mover-capitulo'),
     path('obras/nova/', nova_obra, name='nova-obra'),
     path('leituras/<int:pk>/editar/', editar_leitura, name='editar-leitura'),
+    path('contas/', include('contas.urls')),
 ]

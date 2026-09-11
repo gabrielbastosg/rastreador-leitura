@@ -164,3 +164,22 @@ body {
 }
 
 .botao-novo:hover { filter: brightness(1.08); }
+.usuario {
+    font-size: 13px;
+    color: var(--texto-fraco);
+    white-space: nowrap;
+}
+
+.botao-sair {
+    padding: 8px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: transparent;
+    color: inherit;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.botao-sair:hover { filter: brightness(0.95); }

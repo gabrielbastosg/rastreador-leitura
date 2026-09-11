@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta</title>
+    <script>
+        document.documentElement.dataset.tema = localStorage.getItem('tema') || 'claro';
+    </script>
+    <link rel="stylesheet" href="{% static 'leituras/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'leituras/css/form.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header class="topo">
+            <div>
+                <a class="voltar" href="{% url 'lista-leituras' %}">← estante</a>
+                <h1>Criar conta</h1>
+            </div>
+        </header>
+
+        <form class="formulario" method="post" novalidate>
+            {% csrf_token %}
+
+            {% for erro in form.non_field_errors %}
+                <p class="campo__erro">{{ erro }}</p>
+            {% endfor %}
+
+            {% include 'contas/_campos.html' %}
+
+            <button class="botao-salvar" type="submit">Criar conta</button>
+        </form>
+
+        <p class="secao">Já tem conta? <a href="{% url 'login' %}">Entrar</a></p>
+    </div>
+</body>
+</html>

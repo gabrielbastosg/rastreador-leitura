@@ -24,8 +24,9 @@ env/
 /media/
 *.log
 
-# Editor / SO
+# Editor / SO / ferramentas locais
 .vscode/
 .idea/
+.claude/
 Thumbs.db
 desktop.ini

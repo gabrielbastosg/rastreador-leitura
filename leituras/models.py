@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.conf import settings
 # Create your models here.
 class Obra(models.Model):
     TIPOS=[
@@ -24,12 +24,23 @@ class Obra(models.Model):
         'Materia': 'Matéria',
     }
 
+    dono = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='obras',
+        )
+
     tipo = models.CharField(max_length=20, choices=TIPOS,default='Fanfic')
     titulo = models.CharField(max_length=200)
     autor = models.CharField(max_length=200)
     plataforma = models.CharField(max_length=200)
-    link = models.URLField(unique=True, null=True, blank=True)
+    link = models.URLField(null=True, blank=True)
     total_capitulos = models.PositiveIntegerField(null=True, blank=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['dono', 'link'], name='link_unico_por_dono'),
+        ]
 
     def __str__(self):
         return self.titulo

@@ -30,6 +30,11 @@
                         <li><button type="button" class="tema__opcao" data-tema-opcao="sepia">📜 Sépia</button></li>
                     </ul>
                 </div>
+                <span class="usuario">{{ user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="botao-sair" type="submit">sair</button>
+                </form>
             </div>
         </header>
         <input id="busca" class="busca" type="search" placeholder="Buscar por título, autor, plataforma...">
