@@ -2,33 +2,44 @@ from django.test import TestCase
 from .models import Obra,Leitura
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 # Create your tests here.
 
 class ObraModelTestCase(TestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(
+            username='leitor', password='senha123'
+        )
+
     def test_grupo_de_manhwa_e_quadrinhos(self):
-        obra = Obra.objects.create(tipo='Manhwa', titulo='Teste', autor='Autor', plataforma='Plataforma')
+        obra = Obra.objects.create(dono=self.usuario, tipo='Manhwa', titulo='Teste', autor='Autor', plataforma='Plataforma')
         self.assertEqual(obra.grupo,'Quadrinhos')
 
     def test_grupo_de_tipos_desconhecidos_e_outros(self):
-        obra = Obra.objects.create(tipo='Podcast',titulo='Teste', autor='Autor', plataforma='Plataforma')
+        obra = Obra.objects.create(dono=self.usuario, tipo='Podcast',titulo='Teste', autor='Autor', plataforma='Plataforma')
         self.assertEqual(obra.grupo,'Outros')
 
 
 class LeituraModelTestCase(TestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(
+            username='leitor', password='senha123'
+            )
+
     def test_capitulo_acima_total_e_recusado(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        obra = Obra.objects.create(dono=self.usuario, tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
         leitura = Leitura(obra=obra, capitulo_atual=15, status='Lendo')
         with self.assertRaises(ValidationError) as cm:
             leitura.full_clean()
         self.assertIn('capitulo_atual', cm.exception.message_dict)
 
     def test_obra_sem_total_aceita_qualquer_capitulo(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma')
+        obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma')
         leitura = Leitura(obra=obra, capitulo_atual=999, status='Lendo')
         leitura.full_clean()  # não deve levantar exceção
 
     def test_capitulo_igual_ao_total_aceito(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
         leitura = Leitura(obra=obra, capitulo_atual=10, status='Lendo')
         leitura.full_clean()  # não deve levantar exceção
 
@@ -46,8 +57,14 @@ class LeituraModelTestCase(TestCase):
 
 
 class MoverCapituloTestCase(TestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(
+            username='leitor', password='senha123'
+        )
+        self.client.force_login(self.usuario)
+
     def test_passo_1_avanca_capitulo(self):
-        obra= Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        obra= Obra.objects.create(dono=self.usuario, tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
         leitura = Leitura.objects.create(obra=obra, capitulo_atual=3, status='Lendo')
         self.client.post(reverse('mover-capitulo', args=[leitura.pk]), {'passo': '1'})
         leitura.refresh_from_db()
@@ -55,7 +72,7 @@ class MoverCapituloTestCase(TestCase):
 
     
     def test_chegar_no_total_finaliza_a_leitura(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
         leitura = Leitura.objects.create(obra=obra, capitulo_atual=9, status='Lendo')
         self.client.post(reverse('mover-capitulo', args=[leitura.pk]), {'passo': '1'})
         leitura.refresh_from_db()
@@ -64,7 +81,7 @@ class MoverCapituloTestCase(TestCase):
         self.assertIsNotNone(leitura.encerrado_em)
 
     def test_nao_passar_do_total(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
         leitura = Leitura.objects.create(obra=obra, capitulo_atual=10, status='Lendo')
         self.client.post(reverse('mover-capitulo', args=[leitura.pk]), {'passo': '1'})
         leitura.refresh_from_db()
@@ -72,7 +89,7 @@ class MoverCapituloTestCase(TestCase):
 
     
     def test_nao_desce_abaixo_de_zero(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
         leitura = Leitura.objects.create(obra=obra, capitulo_atual=0, status='Lendo')
         self.client.post(reverse('mover-capitulo', args=[leitura.pk]), {'passo': '-1'})
         leitura.refresh_from_db()
@@ -80,7 +97,7 @@ class MoverCapituloTestCase(TestCase):
 
     
     def test_get_devolve_405(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
         leitura = Leitura.objects.create(obra=obra, capitulo_atual=5, status='Lendo')
         resposta = self.client.get(reverse('mover-capitulo', args=[leitura.pk]))
         self.assertEqual(resposta.status_code, 405)  # Method Not Allowed
@@ -88,6 +105,12 @@ class MoverCapituloTestCase(TestCase):
 
 
 class NovaObraTestCase(TestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(
+            username='leitor', password='senha123'
+        )
+        self.client.force_login(self.usuario)
+
     def test_post_valido_cria_obra_e_leitura(self):
         resposta = self.client.post(reverse('nova-obra'), {
             'tipo': 'Manga',
@@ -140,8 +163,14 @@ class NovaObraTestCase(TestCase):
         self.assertIn('capitulo_atual', resposta.context['form_leitura'].errors)
 
 class EditarLeituraTestCase(TestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(
+            username='leitor', password='senha123'
+        )
+        self.client.force_login(self.usuario)
+
     def test_muda_total_e_capitulo_no_mesmo_post(self):
-        obra = Obra.objects.create(tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma', total_capitulos=10)
+        obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma', total_capitulos=10)
         leitura = Leitura.objects.create(obra=obra,status='Lendo',capitulo_atual=5)
         resposta = self.client.post(reverse('editar-leitura', args=[leitura.pk]), {
             'tipo': 'Manga',
@@ -157,3 +186,26 @@ class EditarLeituraTestCase(TestCase):
         self.assertEqual(obra.total_capitulos, 30)
         self.assertEqual(leitura.capitulo_atual, 25)
         self.assertRedirects(resposta, reverse('lista-leituras'))
+
+class IsolamentoTestCase(TestCase):
+    def setUp(self):
+        self.dono = get_user_model().objects.create_user(
+            username='dono', password='senha123'
+        )
+        self.invasor = get_user_model().objects.create_user(
+            username='invasor', password='senha123'
+        )
+        obra = Obra.objects.create(
+            dono=self.dono, tipo='Manga', titulo='Numero1',
+            autor='autor', plataforma='Plataforma', total_capitulos=10
+        )
+        self.leitura = Leitura.objects.create(
+            obra=obra, capitulo_atual=5, status='Lendo'
+        )
+        self.client.force_login(self.invasor)
+
+    def test_invasao_nao_edita_leitura_de_outro(self):
+        resposta = self.client.post(
+            reverse('editar-leitura', args=[self.leitura.pk]), {}
+        )
+        self.assertEqual(resposta.status_code, 404)
