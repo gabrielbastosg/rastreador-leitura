@@ -21,8 +21,8 @@ from leituras.views import ObraViewSet, LeituraViewSet, lista_leituras, mover_ca
 
 
 router = DefaultRouter()
-router.register('obras', ObraViewSet)
-router.register('leituras', LeituraViewSet)
+router.register('obras', ObraViewSet,basename='obra')
+router.register('leituras', LeituraViewSet,basename='leitura')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

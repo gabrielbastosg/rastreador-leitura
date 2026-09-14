@@ -32,7 +32,8 @@ existe campo `grupo` no banco.*
 - **Status que se corrige sozinho** — chegou no último capítulo vira
   `Finalizado` e grava a data; voltou atrás, volta pra `Lendo`.
 - **Tema claro/escuro**, guardado no navegador.
-- **API REST** completa (CRUD) em `/api/`.
+- **API REST** (CRUD) em `/api/` — autenticada, e cada pessoa só enxerga a
+  própria estante.
 - **Admin** do Django pra cadastro em massa.
 
 ## Stack
@@ -79,6 +80,28 @@ Nunca vai pro Git — o modelo está no `.env.example`.
 
 Dois `ModelViewSet` registrados num `DefaultRouter`, então a API navegável do
 DRF responde no navegador em `/api/`.
+
+**Tudo exige login** (`permission_classes = [IsAuthenticated]`) e devolve só o
+que é seu: cada ViewSet troca o atributo `queryset` por um `get_queryset()` que
+filtra por `request.user`. O atributo seria calculado uma vez, na importação do
+módulo, quando não existe request nenhum pra consultar; o método roda a cada
+chamada. Como o `queryset` some da classe, o `DefaultRouter` perde de onde tirar
+o nome das rotas — daí o `basename=` no `register`.
+
+Pedir a obra de outra pessoa dá **404**, não 403: ela não está no queryset,
+então pra API não existe. Mesma ideia do
+`get_object_or_404(..., obra__dono=request.user)` nas views web.
+
+O `dono` nunca vem do corpo do POST — é um `HiddenField` com
+`CurrentUserDefault()`, que lê o usuário do request. Mandar `"dono": 2` na mão
+não faz nada. É `HiddenField` e não `read_only` de propósito: a
+`UniqueConstraint(fields=['dono', 'link'])` precisa do campo pra montar o
+validador de unicidade, e campo read-only sem default o DRF pula em silêncio —
+link repetido deixaria de dar 400 com mensagem e viraria erro 500.
+
+Já a `obra` de uma leitura vem de quem chama, e aí não dá pra adivinhar a
+certa: um `validate_obra()` no serializer recusa com **400** a obra que não é
+sua. Sem ele, um POST bastaria pra pendurar uma leitura na estante alheia.
 
 `GET /api/leituras/` devolve `obra_titulo` junto, via `source='obra.titulo'`,
 pra não precisar de uma segunda chamada só pelo nome da obra.
@@ -136,8 +159,8 @@ mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 python manage.py test leituras
 ```
 
-Treze testes, sem dependência externa — o Django cria e destrói um banco próprio
-a cada execução.
+Vinte e três testes, sem dependência externa — o Django cria e destrói um banco
+próprio a cada execução.
 
 Cobrem o que **decide** alguma coisa:
 
@@ -147,6 +170,15 @@ Cobrem o que **decide** alguma coisa:
 - **`Leitura.estrelas`** — sem nota, nota no meio e nota cheia.
 - **A view `mover_capitulo` inteira** — o avanço, a finalização automática ao
   bater no total, o teto, o piso e a recusa de `GET` pelo `@require_POST`.
+- **As views `nova_obra` e `editar_leitura`** — o POST válido, os dois
+  formulários voltando com erro cada um, o capítulo acima do total que não deixa
+  nem a obra no banco (é esse que prova o `transaction.atomic`) e a edição que
+  muda total e capítulo no mesmo POST.
+- **O isolamento entre pessoas**, pela web e pela API — editar a leitura de
+  outro dá 404; sem login a API não lista nada; a lista traz só o que é seu
+  (com obra das duas pessoas no banco, senão um filtro quebrado passaria);
+  `DELETE` na obra alheia dá 404 e não apaga; `dono` mandado no corpo é
+  ignorado; e leitura não gruda em obra de outro.
 
 Ficaram de fora de propósito `__str__` e o admin: não decidem nada, não têm como
 estar errados.
@@ -154,8 +186,11 @@ estar errados.
 ## Próximos passos
 
 - Filtros na API com `django-filter` (status, tipo, plataforma)
-- Autenticação — hoje a API é aberta, é projeto de uso local
-- Testes das views de cadastro e edição (`nova_obra` e `editar_leitura`)
+- Esconder da API navegável os títulos alheios. O `validate_obra()` recusa a obra
+  de outra pessoa, mas o formulário HTML do DRF em `/api/leituras/` ainda desenha
+  um menu com **todas** as obras do banco. Não dá pra gravar nada por ali, mas os
+  títulos aparecem. O conserto é filtrar o `queryset` do campo `obra` no
+  serializer, não só validar depois.
 - Contagem do grupo acompanhando a busca, e aviso quando nada é encontrado
 - Validador de senha exigindo pelo menos uma letra. Hoje o Django só recusa senha
   **inteiramente numérica** (`NumericPasswordValidator`), então `1234567!` é aceita.

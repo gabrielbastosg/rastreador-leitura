@@ -3,6 +3,7 @@ from .models import Obra,Leitura
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from rest_framework.test import APITestCase
 # Create your tests here.
 
 class ObraModelTestCase(TestCase):
@@ -209,3 +210,60 @@ class IsolamentoTestCase(TestCase):
             reverse('editar-leitura', args=[self.leitura.pk]), {}
         )
         self.assertEqual(resposta.status_code, 404)
+
+class ApiIsolamentoTestCase(APITestCase):
+    def setUp(self):
+        self.dono = get_user_model().objects.create_user(
+            username='dono', password='senha123'
+        )
+        self.invasor = get_user_model().objects.create_user(
+            username='invasor', password='senha123'
+        )
+        self.obra_do_dono = Obra.objects.create(
+            dono=self.dono, tipo='Manga', titulo='Numero1',
+            autor='autor', plataforma='Plataforma', total_capitulos=10
+        )
+        self.leitura_do_dono = Leitura.objects.create(
+            obra=self.obra_do_dono, capitulo_atual=5, status='Lendo'
+        )
+
+    def test_sem_login_nao_lista_obra(self):
+        resposta = self.client.get(reverse('obra-list'))
+        self.assertEqual(resposta.status_code,403)
+
+    def test_lista_traz_so_as_obras_do_dono(self):
+        obra_do_invasor = Obra.objects.create(dono=self.invasor, tipo='Manga', titulo='Minha', autor='autor', plataforma='Plataforma')
+        self.client.force_login(self.invasor)
+        resposta = self.client.get(reverse('obra-list'))
+        self.assertEqual(len(resposta.data), 1)
+        self.assertEqual(resposta.data[0]['titulo'], 'Minha')
+    
+    def test_invasor_nao_apaga_obra_de_outro(self):
+        self.client.force_login(self.invasor)
+        resposta = self.client.delete(reverse('obra-detail',args=[self.obra_do_dono.pk]))
+        self.assertEqual(resposta.status_code,404)
+        self.assertTrue(Obra.objects.filter(pk=self.obra_do_dono.pk).exists())
+    
+    def test_dono_do_payload_e_ignorado(self):
+        self.client.force_login(self.invasor)
+        resposta = self.client.post(reverse('obra-list'), {
+            'dono': self.dono.pk,
+            'tipo': 'Manga',
+            'titulo': 'No nome do outro',
+            'autor': 'autor',
+            'plataforma': 'Plataforma',
+        })
+        self.assertEqual(resposta.status_code, 201)
+        obra = Obra.objects.get(titulo='No nome do outro')
+        self.assertEqual(obra.dono, self.invasor)
+
+    
+    def test_nao_cria_leitura_na_obra_de_outro(self):
+        self.client.force_login(self.invasor)
+        resposta = self.client.post(reverse('leitura-list'), {
+            'obra': self.obra_do_dono.pk,
+            'capitulo_atual': 1,
+            'status': 'Lendo',
+        })
+        self.assertEqual(resposta.status_code, 400)
+        self.assertEqual(Leitura.objects.count(), 1)

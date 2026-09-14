@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import Obra, Leitura
 from .serializers import ObraSerializer, LeituraSerializer
 from django.utils import timezone
@@ -13,12 +14,19 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 class ObraViewSet(viewsets.ModelViewSet):
-    queryset = Obra.objects.all()
     serializer_class = ObraSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Obra.objects.filter(dono=self.request.user)
+
 
 class LeituraViewSet(viewsets.ModelViewSet):
-    queryset = Leitura.objects.all()
     serializer_class = LeituraSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Leitura.objects.filter(obra__dono=self.request.user)
 
 @login_required
 def lista_leituras(request):
