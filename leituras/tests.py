@@ -267,3 +267,9 @@ class ApiIsolamentoTestCase(APITestCase):
         })
         self.assertEqual(resposta.status_code, 400)
         self.assertEqual(Leitura.objects.count(), 1)
+
+
+    def test_menu_de_obras_nao_mostra_titulo_alheio(self):
+        self.client.force_login(self.invasor)
+        resposta = self.client.get(reverse('leitura-list'),HTTP_ACCEPT='text/html')
+        self.assertNotContains(resposta, self.obra_do_dono.titulo)

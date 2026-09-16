@@ -14,7 +14,16 @@ class LeituraSerializer(serializers.ModelSerializer):
         model = Leitura
         fields = ['id', 'obra', 'obra_titulo', 'capitulo_atual', 'status',
                   'nota', 'criado_em', 'atualizado_em', 'encerrado_em']
-                  
+
+    def get_fields(self):
+        # O menu da API navegavel desenha o queryset do campo. Sem filtrar
+        # aqui, ele lista o titulo de todo mundo mesmo sem deixar gravar.
+        campos = super().get_fields()
+        request = self.context.get('request')
+        if request is not None:
+            campos['obra'].queryset = Obra.objects.filter(dono=request.user)
+        return campos
+
     def validate_obra(self, obra):
         if obra.dono != self.context['request'].user:
             raise serializers.ValidationError('Essa obra não é sua.')

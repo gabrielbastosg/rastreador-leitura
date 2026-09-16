@@ -103,6 +103,14 @@ Já a `obra` de uma leitura vem de quem chama, e aí não dá pra adivinhar a
 certa: um `validate_obra()` no serializer recusa com **400** a obra que não é
 sua. Sem ele, um POST bastaria pra pendurar uma leitura na estante alheia.
 
+O menu de obras da API navegável também é filtrado, num `get_fields()` que troca
+o `queryset` do campo `obra` pelas obras de quem pediu. Validar depois impedia a
+gravação, mas o formulário HTML já tinha desenhado o título de todo mundo no
+`<select>` — vazamento de leitura, não de escrita. Com o queryset filtrado, a
+obra alheia falha no próprio campo e a mensagem vira o genérico "Pk inválido",
+em vez de "Essa obra não é sua.". É de propósito, e é a mesma linha do 404: pra
+você, a obra de outra pessoa não existe.
+
 `GET /api/leituras/` devolve `obra_titulo` junto, via `source='obra.titulo'`,
 pra não precisar de uma segunda chamada só pelo nome da obra.
 
@@ -159,7 +167,7 @@ mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 python manage.py test leituras
 ```
 
-Vinte e três testes, sem dependência externa — o Django cria e destrói um banco
+Vinte e quatro testes, sem dependência externa — o Django cria e destrói um banco
 próprio a cada execução.
 
 Cobrem o que **decide** alguma coisa:
@@ -178,7 +186,8 @@ Cobrem o que **decide** alguma coisa:
   outro dá 404; sem login a API não lista nada; a lista traz só o que é seu
   (com obra das duas pessoas no banco, senão um filtro quebrado passaria);
   `DELETE` na obra alheia dá 404 e não apaga; `dono` mandado no corpo é
-  ignorado; e leitura não gruda em obra de outro.
+  ignorado; leitura não gruda em obra de outro; e o menu de obras da API
+  navegável não desenha título alheio.
 
 Ficaram de fora de propósito `__str__` e o admin: não decidem nada, não têm como
 estar errados.
@@ -186,11 +195,6 @@ estar errados.
 ## Próximos passos
 
 - Filtros na API com `django-filter` (status, tipo, plataforma)
-- Esconder da API navegável os títulos alheios. O `validate_obra()` recusa a obra
-  de outra pessoa, mas o formulário HTML do DRF em `/api/leituras/` ainda desenha
-  um menu com **todas** as obras do banco. Não dá pra gravar nada por ali, mas os
-  títulos aparecem. O conserto é filtrar o `queryset` do campo `obra` no
-  serializer, não só validar depois.
 - Contagem do grupo acompanhando a busca, e aviso quando nada é encontrado
 - Validador de senha exigindo pelo menos uma letra. Hoje o Django só recusa senha
   **inteiramente numérica** (`NumericPasswordValidator`), então `1234567!` é aceita.
