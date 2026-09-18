@@ -88,6 +88,7 @@ def nova_obra(request):
                 with transaction.atomic():
                     obra = form_obra.save(commit=False)
                     obra.dono= request.user
+                    obra.full_clean()
                     obra.save()
                     leitura = form_leitura.save(commit=False)
                     leitura.obra = obra

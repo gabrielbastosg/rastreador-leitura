@@ -163,6 +163,20 @@ class NovaObraTestCase(TestCase):
         self.assertEqual(resposta.status_code, 200)
         self.assertIn('capitulo_atual', resposta.context['form_leitura'].errors)
 
+    def test_link_repetido_nao_quebra_e_volta_com_erro(self):
+        Obra.objects.create(
+            dono=self.usuario, tipo='Fanfic', titulo='Primeira',
+            autor='a', plataforma='Wattpad', link='https://exemplo.com/1',
+        )
+        resposta = self.client.post(reverse('nova-obra'), {
+            'titulo': 'Segunda', 'autor': 'b', 'tipo': 'Fanfic',
+            'plataforma': 'Wattpad', 'link': 'https://exemplo.com/1',
+            'total_capitulos': '', 'capitulo_atual': '0',
+            'status': 'Lendo', 'nota': '',
+        })
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(Obra.objects.count(), 1)
+
 class EditarLeituraTestCase(TestCase):
     def setUp(self):
         self.usuario = get_user_model().objects.create_user(
