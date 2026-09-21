@@ -176,6 +176,7 @@ class NovaObraTestCase(TestCase):
         })
         self.assertEqual(resposta.status_code, 200)
         self.assertEqual(Obra.objects.count(), 1)
+        self.assertContains(resposta, 'já existe')
 
 class EditarLeituraTestCase(TestCase):
     def setUp(self):
@@ -201,6 +202,29 @@ class EditarLeituraTestCase(TestCase):
         self.assertEqual(obra.total_capitulos, 30)
         self.assertEqual(leitura.capitulo_atual, 25)
         self.assertRedirects(resposta, reverse('lista-leituras'))
+
+    def test_link_repetido_ao_editar_nao_quebra_e_volta_com_erro(self):
+        primeira = Obra.objects.create(
+            dono=self.usuario, tipo='Fanfic', titulo='Primeira',
+            autor='a', plataforma='Wattpad', link='https://exemplo.com/1',
+        )
+        segunda = Obra.objects.create(
+            dono=self.usuario, tipo='Fanfic', titulo='Segunda',
+            autor='b', plataforma='Wattpad', link='https://exemplo.com/2',
+        )
+        leitura = Leitura.objects.create(obra=segunda, status='Lendo', capitulo_atual=3)
+
+        resposta = self.client.post(reverse('editar-leitura', args=[leitura.pk]), {
+            'titulo': 'Segunda', 'autor': 'b', 'tipo': 'Fanfic',
+            'plataforma': 'Wattpad', 'link': primeira.link,
+            'total_capitulos': '', 'capitulo_atual': '3',
+            'status': 'Lendo', 'nota': '',
+        })
+
+        segunda.refresh_from_db()
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(segunda.link, 'https://exemplo.com/2')
+        self.assertContains(resposta, 'já existe')
 
 class IsolamentoTestCase(TestCase):
     def setUp(self):

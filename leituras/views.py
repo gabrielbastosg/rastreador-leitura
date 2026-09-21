@@ -121,14 +121,20 @@ def editar_leitura(request, pk):
         leitura_ok = form_leitura.is_valid()
 
         if obra_ok and leitura_ok:
-            # atomic porque sao dois save(): um erro no segundo deixaria a
-            # obra alterada e a leitura nao.
-            with transaction.atomic():
-                form_obra.save()
-                if 'capitulo_atual' in form_leitura.changed_data:
-                    leitura.avancado_em = timezone.now()
-                form_leitura.save()
-            return redirect('lista-leituras')
+            try:
+                # atomic porque sao dois save(): um erro no segundo deixaria a
+                # obra alterada e a leitura nao.
+                with transaction.atomic():
+                    obra = form_obra.save(commit=False)
+                    obra.full_clean()
+                    obra.save()
+                    if 'capitulo_atual' in form_leitura.changed_data:
+                        leitura.avancado_em = timezone.now()
+                    form_leitura.save()
+            except ValidationError as erro:
+                form_obra.add_error(None, erro)
+            else:
+                return redirect('lista-leituras')
     else:
         form_obra = ObraForm(instance=obra)
         form_leitura = LeituraForm(instance=leitura)
