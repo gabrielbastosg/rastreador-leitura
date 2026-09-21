@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Rastreador de Leituras{% endblock %} </title>
+    <script>
+        // roda antes de pintar a tela, senao a pagina pisca clara antes de virar escura
+        document.documentElement.dataset.tema = localStorage.getItem('tema') || 'claro';
+    </script>
+    <link rel="stylesheet" href="{% static 'leituras/css/base.css' %}">
+    {% block css %} {% endblock %}
+</head>
+<body>
+    <div class="container">
+        <header class="topo">
+            <div>
+                {% block cabecalho %}{% endblock %}
+            </div>
+            <div class="acoes">
+                {% block acoes %} {% endblock %}
+            <div class="tema">
+                <button id="botao-tema" class="botao-tema" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Escolher tema">🌙
+                </button>
+                <ul class="tema__menu" id="menu-tema" hidden>
+                        <li><button type="button" class="tema__opcao" data-tema-opcao="claro">☀️ Claro</button></li>
+                        <li><button type="button" class="tema__opcao" data-tema-opcao="escuro">🌙 Escuro</button></li>
+                        <li><button type="button" class="tema__opcao" data-tema-opcao="sepia">📜 Sépia</button></li>
+                </ul>
+            </div>
+            {% if user.is_authenticated %}
+            <span class="usuario">{{user.username }}</span>
+            <form method="post" action="{%url 'logout' %}">
+                {% csrf_token %}
+                <button class="botao-sair" type="submit">Sair</button>
+            </form>
+            {% endif %}
+            </div>
+        </header>
+        {% block conteudo %}{% endblock %}
+    </div>
+    <script src="{% static 'leituras/js/tema.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

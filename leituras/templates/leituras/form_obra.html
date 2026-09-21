@@ -1,47 +1,27 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="pt-br" data-tema="claro">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova obra</title>
-    <script>
-        document.documentElement.dataset.tema = localStorage.getItem('tema') || 'claro';
-    </script>
-    <link rel="stylesheet" href="{% static 'leituras/css/base.css' %}">
-    <link rel="stylesheet" href="{% static 'leituras/css/form.css' %}">
-</head>
-<body>
-    <div class="container">
-        <header class="topo">
-            <div>
-                <a class="voltar" href="{% url 'lista-leituras' %}">← estante</a>
-                <h1>Nova obra</h1>
-            </div>
-            <div class="tema">
-                <button id="botao-tema" class="botao-tema" type="button"
-                        aria-haspopup="true" aria-expanded="false" aria-label="Escolher tema">🌙</button>
-                <ul class="tema__menu" id="menu-tema" hidden>
-                    <li><button type="button" class="tema__opcao" data-tema-opcao="claro">☀️ Claro</button></li>
-                    <li><button type="button" class="tema__opcao" data-tema-opcao="escuro">🌙 Escuro</button></li>
-                    <li><button type="button" class="tema__opcao" data-tema-opcao="sepia">📜 Sépia</button></li>
-                </ul>
-            </div>
-        </header>
 
-        <form class="formulario" method="post" novalidate>
-            {% csrf_token %}
+{% block titulo %} Nova Obra {% endblock %}
+{% block css %}
 
-            <h2 class="secao">A obra</h2>
-            {% include 'leituras/_campos.html' with form=form_obra %}
+<link rel="stylesheet" href="{% static 'leituras/css/form.css' %}">
+{% endblock %}
 
-            <h2 class="secao">Onde você está</h2>
-            {% include 'leituras/_campos.html' with form=form_leitura %}
-            
-            <button class="botao-salvar" type="submit">Salvar</button>
-        </form>
-    </div>
+{% block cabecalho %}
+    <a class="voltar" href="{% url 'lista-leituras' %}">← estante</a>
+    <h1>Nova obra</h1>
+{% endblock %}
 
-    <script src="{% static 'leituras/js/tema.js' %}"></script>
-</body>
-</html>
+{% block conteudo %}
+    <form class="formulario" method="post" novalidate>
+        {% csrf_token %}
+
+        <h2 class="secao">A obra</h2>
+        {% include 'leituras/_campos.html' with form=form_obra %}
+
+        <h2 class="secao">Onde você está</h2>
+        {% include 'leituras/_campos.html' with form=form_leitura %}
+
+        <button class="botao-salvar" type="submit">Salvar</button>
+    </form>
+{% endblock %}
