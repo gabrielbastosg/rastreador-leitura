@@ -106,6 +106,7 @@ def nova_obra(request):
     return render(request, 'leituras/form_obra.html', {
         'form_obra': form_obra,
         'form_leitura': form_leitura,
+        'titulo_pagina': 'Nova obra',
     })
 
 @login_required
@@ -135,4 +136,5 @@ def editar_leitura(request, pk):
     return render(request, 'leituras/form_obra.html', {
         'form_obra': form_obra,
         'form_leitura': form_leitura,
+        'titulo_pagina': 'Editar leitura',
         })

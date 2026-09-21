@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block titulo %} Nova Obra {% endblock %}
+
+{% block titulo %}{{ titulo_pagina }}{% endblock %}
 {% block css %}
 
 <link rel="stylesheet" href="{% static 'leituras/css/form.css' %}">
@@ -9,7 +10,7 @@
 
 {% block cabecalho %}
     <a class="voltar" href="{% url 'lista-leituras' %}">← estante</a>
-    <h1>Nova obra</h1>
+        <h1>{{ titulo_pagina }}</h1>
 {% endblock %}
 
 {% block conteudo %}
