@@ -26,10 +26,6 @@ class CadastroTestCase(TestCase):
 
         self.assertEqual(resposta.status_code,200)
         self.assertFalse(get_user_model().objects.filter(username='novato').exists())
-    
-    def test_estante_sem_login_manda_pro_login(self):
-        resposta = self.client.get(reverse('lista-leituras'))
-        self.assertRedirects(resposta,'/contas/login/?next=/')
 
 
     def test_logout_derruba_a_sessao(self):
@@ -37,3 +33,22 @@ class CadastroTestCase(TestCase):
         self.client.force_login(usuario)
         self.client.post(reverse('logout'))
         self.assertNotIn('_auth_user_id', self.client.session)
+
+
+class AcessoSemLoginTestCase(TestCase):
+    def test_estante_sem_login_manda_pro_login(self):
+        resposta = self.client.get(reverse('lista-leituras'))
+        self.assertRedirects(resposta,'/contas/login/?next=/')
+    
+    def test_nova_obra_sem_login_manda_pro_login(self):
+        resposta = self.client.get(reverse('nova-obra'))
+        self.assertRedirects(resposta, '/contas/login/?next=/obras/nova/')
+
+    def test_editar_sem_login_manda_pro_login(self):
+        resposta = self.client.get(reverse('editar-leitura',args=[1]))
+        self.assertRedirects(resposta, '/contas/login/?next=/leituras/1/editar/')
+
+
+    def test_mover_sem_login_manda_pro_login(self):
+        resposta = self.client.post(reverse('mover-capitulo', args=[1]))
+        self.assertRedirects(resposta, '/contas/login/?next=/leituras/1/mover/')
