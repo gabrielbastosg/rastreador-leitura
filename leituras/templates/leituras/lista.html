@@ -31,7 +31,15 @@
                     {% else %}
                         <span class="item__titulo">{{ leitura.obra.titulo }}</span>
                     {% endif %}
-                    <span class="selo selo--{{ leitura.status|lower }}">{{ leitura.status }}</span>
+                        <details class="status" name="status">
+                            <summary class="selo selo--{{ leitura.status|lower }}" title="Mudar status">{{ leitura.status }}</summary>
+                            <form class="tema__menu status__menu" method="post" action="{% url 'mudar-status' leitura.pk %}">
+                                {% csrf_token %}
+                                {% for opcao in opcoes_status %}
+                                    <button class="tema__opcao" type="submit" name="status" value="{{ opcao }}"{% if opcao == leitura.status %} aria-current="true"{% endif %}>{{ opcao }}</button>
+                                {% endfor %}
+                            </form>
+                        </details>
                 </div>
 
                 <p class="item__meta">{{ leitura.obra.autor }} · {{ leitura.obra.get_tipo_display }} · {{ leitura.obra.plataforma }}</p>

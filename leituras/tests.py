@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
+from django.utils import timezone
 # Create your tests here.
 
 class ObraModelTestCase(TestCase):
@@ -124,6 +125,42 @@ class ExcluirLeituraTestCase(TestCase):
         resposta = self.client.get(reverse('excluir-leitura',args=[leitura.pk]))
         self.assertEqual(resposta.status_code, 405) 
 
+class MudarStatusTestCase(TestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(
+            username='leitor',
+            password='senha123',
+        )
+        self.client.force_login(self.usuario)
+
+    def test_muda_o_status(self):
+        obra= Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma',total_capitulos=10)
+        leitura= Leitura.objects.create(obra=obra,capitulo_atual=3, status='Lendo')
+        self.client.post(reverse('mudar-status',args=[leitura.pk]),{'status':'Pausado'})
+        leitura.refresh_from_db()
+        self.assertEqual(leitura.status,'Pausado')
+
+    def test_finalizado_grava_data(self):
+        obra= Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma',total_capitulos=10)
+        leitura= Leitura.objects.create(obra=obra,capitulo_atual=3, status='Lendo')
+        self.client.post(reverse('mudar-status',args=[leitura.pk]),{'status':'Finalizado'})
+        leitura.refresh_from_db()
+        self.assertIsNotNone(leitura.encerrado_em)
+
+
+    def test_sair_de_finalizado_apaga_a_data(self):
+        obra= Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma',total_capitulos=10)
+        leitura= Leitura.objects.create(obra=obra,capitulo_atual=3, status='Finalizado',encerrado_em=timezone.localdate())
+        self.client.post(reverse('mudar-status',args=[leitura.pk]),{'status':'Lendo'})
+        leitura.refresh_from_db()
+        self.assertIsNone(leitura.encerrado_em)
+
+    def test_status_invalido_nao_grava(self):
+        obra= Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma',total_capitulos=10)
+        leitura= Leitura.objects.create(obra=obra,capitulo_atual=3, status='Lendo')
+        self.client.post(reverse('mudar-status', args=[leitura.pk]), {'status': 'Lixo'})
+        leitura.refresh_from_db()
+        self.assertEqual(leitura.status,'Lendo')        
 
 class NovaObraTestCase(TestCase):
     def setUp(self):

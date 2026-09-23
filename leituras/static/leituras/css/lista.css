@@ -115,6 +115,27 @@ a.item__titulo:hover {
 .selo--finalizado { --cor-selo: var(--finalizado); }
 .selo--abandonado { --cor-selo: var(--abandonado); }
 
+/* ---------- menu de status ---------- */
+.status {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.status summary {
+    cursor: pointer;
+    list-style: none;
+}
+
+.status summary::-webkit-details-marker { display: none; }
+
+.status__menu { top: 28px; }
+
+/* o cartao com o menu aberto fica por cima dos outros; sem isso, o hover
+   (transform) do cartao de baixo desenha ele por cima do menu */
+.item:has(.status[open]) {
+    position: relative;
+    z-index: 2;
+}
 /* ---------- progresso ---------- */
 .barra {
     height: 8px;

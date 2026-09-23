@@ -44,6 +44,7 @@ def lista_leituras(request):
     return render(request, 'leituras/lista.html', {
         'leituras': leituras,
         'secoes': secoes,
+        'opcoes_status': [valor for valor, _ in Leitura._meta.get_field('status').choices],
     })
 
 @login_required
@@ -78,6 +79,27 @@ def excluir_leitura(request,pk):
     # apaga a obra, e nao a leitura: o CASCADE so corre da Obra pra Leitura,
     # entao apagar so a leitura deixaria a obra orfa
     leitura.obra.delete()
+    return redirect('lista-leituras')
+
+
+@login_required
+@require_POST
+def mudar_status(request,pk):
+    leitura = get_object_or_404(Leitura, pk=pk, obra__dono=request.user)
+    novo = request.POST.get('status')
+
+    # o save() nao confere as choices: sem esse if, um POST forjado
+    # gravaria qualquer texto no status
+    if novo not in dict(Leitura._meta.get_field('status').choices):
+        return redirect('lista-leituras')
+
+    if novo == 'Finalizado' and leitura.status != 'Finalizado':
+        leitura.encerrado_em = timezone.localdate()
+    elif novo != 'Finalizado':
+        leitura.encerrado_em = None
+
+    leitura.status = novo
+    leitura.save()
     return redirect('lista-leituras')
 
 
