@@ -72,6 +72,16 @@ def mover_capitulo(request, pk):
     return redirect('lista-leituras')
 
 @login_required
+@require_POST
+def excluir_leitura(request,pk):
+    leitura = get_object_or_404(Leitura,pk=pk, obra__dono=request.user)
+    # apaga a obra, e nao a leitura: o CASCADE so corre da Obra pra Leitura,
+    # entao apagar so a leitura deixaria a obra orfa
+    leitura.obra.delete()
+    return redirect('lista-leituras')
+
+
+@login_required
 def nova_obra(request):
     if request.method == 'POST':
         form_obra = ObraForm(request.POST)

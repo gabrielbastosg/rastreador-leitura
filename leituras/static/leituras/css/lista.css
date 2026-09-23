@@ -191,6 +191,28 @@ a.item__titulo:hover {
 
 .botao-editar:active { transform: scale(.94); }
 
+.botao-excluir{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 30px;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    background: none;
+    color: var(--texto-fraco);
+    font-size: .95rem;
+    cursor: pointer;
+    transition: border-color .15s ease ,color 0.15s ease, transform .1s ease;
+}
+.botao-excluir:hover{
+    border-color: var(--abandonado);
+    color: var(--abandonado);
+}
+.botao-excluir:active{
+    transform: scale(.94);
+}
+
 .botao-passo--mais {
     border-color: color-mix(in srgb, var(--destaque) 40%, transparent);
     background: color-mix(in srgb, var(--destaque) 12%, transparent);

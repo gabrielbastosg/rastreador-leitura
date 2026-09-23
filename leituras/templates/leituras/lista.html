@@ -51,6 +51,10 @@
 
                     <span class="estrelas">{{ leitura.estrelas }}</span>
                     <a class="botao-editar" href="{% url 'editar-leitura' leitura.pk %}" title="Editar leitura">✎</a>
+                    <form method="post" action="{% url 'excluir-leitura' leitura.pk %}" onsubmit="return confirm('Excluir {{ leitura.obra.titulo|escapejs }}? Não dá para desfazer.')">
+                        {% csrf_token %}
+                        <button class="botao-excluir" type="submit" title="Excluir leitura">🗑</button>
+                    </form>  
                     <form class="controles" method="post" action="{% url 'mover-capitulo' leitura.pk %}">
                         {% csrf_token %}
                         {% if leitura.capitulo_atual > 0 %}

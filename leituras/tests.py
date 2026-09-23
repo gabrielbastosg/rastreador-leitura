@@ -103,6 +103,26 @@ class MoverCapituloTestCase(TestCase):
         resposta = self.client.get(reverse('mover-capitulo', args=[leitura.pk]))
         self.assertEqual(resposta.status_code, 405)  # Method Not Allowed
 
+class ExcluirLeituraTestCase(TestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(
+            username='leitor',
+            password='senha123',
+        )
+        self.client.force_login(self.usuario)
+
+    def test_excluir_apaga_a_obra_junto(self):
+        obra= Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma',total_capitulos=10)
+        leitura= Leitura.objects.create(obra=obra,capitulo_atual=3, status='Lendo')
+        self.client.post(reverse('excluir-leitura',args=[leitura.pk]))
+        self.assertFalse(Leitura.objects.filter(pk=leitura.pk).exists())
+        self.assertFalse(Obra.objects.filter(pk=obra.pk).exists())
+
+    def test_get_devolve_405(self):
+        obra= Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='plataforma',total_capitulos=15)
+        leitura = Leitura.objects.create(obra=obra,capitulo_atual=3, status='Lendo')
+        resposta = self.client.get(reverse('excluir-leitura',args=[leitura.pk]))
+        self.assertEqual(resposta.status_code, 405) 
 
 
 class NovaObraTestCase(TestCase):
@@ -248,6 +268,15 @@ class IsolamentoTestCase(TestCase):
             reverse('editar-leitura', args=[self.leitura.pk]), {}
         )
         self.assertEqual(resposta.status_code, 404)
+
+    def test_invasao_nao_exclui_leitura_de_outro(self):
+        resposta = self.client.post(
+            reverse('excluir-leitura',args=[self.leitura.pk])
+        )
+        self.assertEqual(resposta.status_code, 404)
+        self.assertTrue(Leitura.objects.filter(pk=self.leitura.pk).exists())
+
+
 
 class ApiIsolamentoTestCase(APITestCase):
     def setUp(self):
