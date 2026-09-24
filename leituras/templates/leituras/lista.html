@@ -24,7 +24,7 @@
             <h2 class="grupo__titulo">{{ nome }} <span class="grupo__contagem">{{ itens|length }}</span></h2>
             <ul class="lista">
             {% for leitura in itens %}
-            <li class="item">
+            <li class="item" id="leitura-{{ leitura.pk }}">
                 <div class="item__cabecalho">
                     {% if leitura.obra.link %}
                         <a class="item__titulo" href="{{ leitura.obra.link }}" target="_blank" rel="noopener">{{ leitura.obra.titulo }}</a>

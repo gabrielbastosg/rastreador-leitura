@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import F
 from django.contrib.auth.decorators import login_required
-
+from django.urls import reverse
 # Create your views here.
 
 class ObraViewSet(viewsets.ModelViewSet):
@@ -47,6 +47,11 @@ def lista_leituras(request):
         'opcoes_status': [valor for valor, _ in Leitura._meta.get_field('status').choices],
     })
 
+
+def voltar_para(leitura):
+    return redirect(reverse('lista-leituras') + f'#leitura-{leitura.pk}')
+
+
 @login_required
 @require_POST
 def mover_capitulo(request, pk):
@@ -56,7 +61,7 @@ def mover_capitulo(request, pk):
     total = leitura.obra.total_capitulos
 
     if novo < 0 or (total is not None and novo > total):
-        return redirect('lista-leituras')
+        return voltar_para(leitura)
 
     leitura.capitulo_atual = novo
     leitura.avancado_em = timezone.now()
@@ -70,7 +75,7 @@ def mover_capitulo(request, pk):
             leitura.encerrado_em = None
 
     leitura.save()
-    return redirect('lista-leituras')
+    return voltar_para(leitura)
 
 @login_required
 @require_POST
@@ -91,7 +96,7 @@ def mudar_status(request,pk):
     # o save() nao confere as choices: sem esse if, um POST forjado
     # gravaria qualquer texto no status
     if novo not in dict(Leitura._meta.get_field('status').choices):
-        return redirect('lista-leituras')
+        return voltar_para(leitura)
 
     if novo == 'Finalizado' and leitura.status != 'Finalizado':
         leitura.encerrado_em = timezone.localdate()
@@ -100,7 +105,7 @@ def mudar_status(request,pk):
 
     leitura.status = novo
     leitura.save()
-    return redirect('lista-leituras')
+    return voltar_para(leitura)
 
 
 @login_required

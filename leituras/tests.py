@@ -72,6 +72,12 @@ class MoverCapituloTestCase(TestCase):
         leitura.refresh_from_db()
         self.assertEqual(leitura.capitulo_atual, 4)
 
+    def test_volta_para_o_cartao_de_leitura(self):
+        obra = Obra.objects.create(dono=self.usuario, tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        leitura = Leitura.objects.create(obra=obra,capitulo_atual=3, status='Lendo')
+        resposta = self.client.post(reverse('mover-capitulo', args=[leitura.pk]), {'passo': '1'})
+        self.assertEqual(resposta.url, reverse('lista-leituras') + f'#leitura-{leitura.pk}')
+
     
     def test_chegar_no_total_finaliza_a_leitura(self):
         obra = Obra.objects.create(dono=self.usuario,tipo='Manga',titulo='Numero1',autor='autor',plataforma='Plataforma',total_capitulos=10)
