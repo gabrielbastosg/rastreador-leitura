@@ -23,7 +23,11 @@ existe campo `grupo` no banco.*
   O grupo é deduzido do tipo da obra, não é campo no banco.
 - **Cadastro numa tela só** (`/obras/nova/`) — obra e leitura no mesmo POST,
   dentro de uma transação: capítulo inválido não deixa obra órfã no banco.
-- **Botões `+1` / `-1`** direto no card: marca o capítulo sem sair da página.
+- **Botões `+1` / `-1`** direto no card: marca o capítulo sem sair da página, e
+  a página volta pro mesmo card em vez de pular pro topo.
+- **Status pelo selo** — clicar no selo do card abre os status e troca na hora,
+  sem abrir a edição.
+- **Excluir pela estante** — o 🗑 apaga a obra e a leitura juntas, com confirmação.
 - **Edição pela estante** (`/leituras/<id>/editar/`) — o botão ✎ abre obra e
   leitura no mesmo formulário, salvos numa transação. Sem passar pelo admin.
 - **Busca instantânea** — a caixa no topo filtra por título, autor, tipo ou
@@ -67,6 +71,11 @@ Nunca vai pro Git — o modelo está no `.env.example`.
 | `/` | estante — cards agrupados, busca, `+1`/`-1`, tema claro/escuro |
 | `/obras/nova/` | cadastro de obra + leitura |
 | `/leituras/<id>/editar/` | edição de obra + leitura na mesma tela |
+| `/leituras/<id>/mover/` | `+1` / `-1` no capítulo (só POST) |
+| `/leituras/<id>/status/` | troca o status pelo selo (só POST) |
+| `/leituras/<id>/excluir/` | apaga a obra e a leitura (só POST) |
+| `/contas/cadastro/` | cria a conta |
+| `/contas/login/` e `/contas/logout/` | entrar e sair |
 | `/admin/` | admin do Django |
 
 ## API
@@ -164,10 +173,10 @@ mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 ## Testes
 
 ```bash
-python manage.py test leituras
+python manage.py test
 ```
 
-Vinte e quatro testes, sem dependência externa — o Django cria e destrói um banco
+Quarenta e um testes, sem dependência externa — o Django cria e destrói um banco
 próprio a cada execução.
 
 Cobrem o que **decide** alguma coisa:
