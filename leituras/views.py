@@ -121,21 +121,26 @@ def nova_obra(request):
         leitura_ok = form_leitura.is_valid()
 
         if obra_ok and leitura_ok:
+            obra = form_obra.save(commit=False)
+            obra.dono = request.user
             try:
-                with transaction.atomic():
-                    obra = form_obra.save(commit=False)
-                    obra.dono= request.user
-                    obra.full_clean()
-                    obra.save()
-                    leitura = form_leitura.save(commit=False)
-                    leitura.obra = obra
-                    leitura.avancado_em = timezone.now()
-                    leitura.full_clean(exclude=['obra'])
-                    leitura.save()
+                obra.full_clean()
             except ValidationError as erro:
-                form_leitura.add_error(None, erro)
+                form_obra.add_error(None, erro)
             else:
-                return redirect('lista-leituras')
+                try:
+                    with transaction.atomic():
+                        obra.save()
+                        leitura = form_leitura.save(commit=False)
+                        leitura.obra = obra
+                        leitura.avancado_em = timezone.now()
+                        leitura.full_clean(exclude=['obra'])
+                        leitura.save()
+                except ValidationError as erro:
+                    form_leitura.add_error(None, erro)
+                else:
+                    return redirect('lista-leituras')
+        
     else:
         form_obra = ObraForm()
         form_leitura = LeituraForm(initial={'status': 'Lendo', 'capitulo_atual': 0})

@@ -240,6 +240,8 @@ class NovaObraTestCase(TestCase):
         self.assertEqual(resposta.status_code, 200)
         self.assertEqual(Obra.objects.count(), 1)
         self.assertContains(resposta, 'já existe')
+        self.assertTrue(resposta.context['form_obra'].non_field_errors())
+        self.assertFalse(resposta.context['form_leitura'].non_field_errors())
 
 class EditarLeituraTestCase(TestCase):
     def setUp(self):
