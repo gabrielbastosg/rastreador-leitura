@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Obra, Leitura
 from .serializers import ObraSerializer, LeituraSerializer
 from django.utils import timezone
@@ -24,6 +25,9 @@ class ObraViewSet(viewsets.ModelViewSet):
 class LeituraViewSet(viewsets.ModelViewSet):
     serializer_class = LeituraSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status', 'obra__tipo', 'obra__plataforma']
+
 
     def get_queryset(self):
         return Leitura.objects.filter(obra__dono=self.request.user)

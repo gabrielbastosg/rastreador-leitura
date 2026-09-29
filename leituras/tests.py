@@ -385,3 +385,21 @@ class ApiIsolamentoTestCase(APITestCase):
         self.client.force_login(self.invasor)
         resposta = self.client.get(reverse('leitura-list'),HTTP_ACCEPT='text/html')
         self.assertNotContains(resposta, self.obra_do_dono.titulo)
+
+
+class ApiFiltroTestCase(APITestCase):
+    def setUp(self):
+        self.usuario = get_user_model().objects.create_user(username='leitor', password='senha123')
+        obra = Obra.objects.create(dono=self.usuario, tipo='Manga',titulo='Obra',autor='autor',plataforma='Plataforma',total_capitulos=10)
+        Leitura.objects.create(obra=obra, capitulo_atual=5,status='Lendo')
+        Leitura.objects.create(obra=obra,capitulo_atual=2, status='Pausado')
+        self.client.force_login(self.usuario)
+
+    def test_filtro_traz_so_o_status_pedido(self):
+        resposta =self.client.get(reverse('leitura-list'),{'status':'Pausado'})
+        self.assertEqual(len(resposta.data) ,1)
+        self.assertEqual(resposta.data[0]['status'],'Pausado')
+    
+    def test_status_invalido_da_400(self):
+        resposta = self.client.get(reverse('leitura-list'),{'status':'lendo'})
+        self.assertEqual(resposta.status_code, 400)
