@@ -123,6 +123,23 @@ você, a obra de outra pessoa não existe.
 `GET /api/leituras/` devolve `obra_titulo` junto, via `source='obra.titulo'`,
 pra não precisar de uma segunda chamada só pelo nome da obra.
 
+A lista de leituras aceita **filtros** pela query string, com `django-filter`:
+
+```
+/api/leituras/?status=Lendo
+/api/leituras/?obra__tipo=Manga
+/api/leituras/?obra__plataforma=Wattpad
+```
+
+São os mesmos três campos do `list_filter` do admin, declarados em
+`filterset_fields` — o `obra__` atravessa para a obra, como no `.filter()`. Os
+valores seguem o `choices` do modelo, com maiúscula: `?status=lendo` dá **400**
+com a mensagem dizendo que não é uma escolha válida, em vez de uma lista vazia
+que pareceria "não tem nada". A plataforma é texto livre, então a comparação é
+exata. O filtro roda **depois** do `get_queryset()`, sobre o que já é seu. Na API
+navegável, o botão **Filtros** mostra o formulário que o `django-filter` monta
+sozinho a partir do modelo.
+
 ## Modelo de dados
 
 **Obra** — `tipo` (Fanfic/Mangá/Manhwa/Webtoon/HQ/Light Novel/Matéria),
@@ -176,7 +193,7 @@ mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 python manage.py test
 ```
 
-Quarenta e um testes, sem dependência externa — o Django cria e destrói um banco
+Quarenta e três testes, sem dependência externa — o Django cria e destrói um banco
 próprio a cada execução.
 
 Cobrem o que **decide** alguma coisa:
@@ -197,13 +214,14 @@ Cobrem o que **decide** alguma coisa:
   `DELETE` na obra alheia dá 404 e não apaga; `dono` mandado no corpo é
   ignorado; leitura não gruda em obra de outro; e o menu de obras da API
   navegável não desenha título alheio.
+- **Os filtros da API** — pedir um status traz só as leituras dele, e um valor
+  fora do `choices` (`lendo`, minúsculo) dá 400.
 
 Ficaram de fora de propósito `__str__` e o admin: não decidem nada, não têm como
 estar errados.
 
 ## Próximos passos
 
-- Filtros na API com `django-filter` (status, tipo, plataforma)
 - Contagem do grupo acompanhando a busca, e aviso quando nada é encontrado
 - Validador de senha exigindo pelo menos uma letra. Hoje o Django só recusa senha
   **inteiramente numérica** (`NumericPasswordValidator`), então `1234567!` é aceita.
