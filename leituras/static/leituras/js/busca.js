@@ -12,6 +12,7 @@ campo.addEventListener('input', () => {
     
     secoes.forEach((secao) => {
         const visiveis = secao.querySelectorAll('.item:not([hidden])');
+        secao.querySelector('.grupo__contagem').textContent = visiveis.length;
         secao.hidden = visiveis.length === 0;
     });
 });
