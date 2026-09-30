@@ -31,8 +31,9 @@ existe campo `grupo` no banco.*
 - **Edição pela estante** (`/leituras/<id>/editar/`) — o botão ✎ abre obra e
   leitura no mesmo formulário, salvos numa transação. Sem passar pelo admin.
 - **Busca instantânea** — a caixa no topo filtra por título, autor, tipo ou
-  plataforma enquanto você digita, e esconde a seção que ficou vazia. Só
-  JavaScript, sem ida ao servidor.
+  plataforma enquanto você digita, esconde a seção que ficou vazia, atualiza a
+  contagem de cada grupo e avisa quando nada é encontrado. Só JavaScript, sem
+  ida ao servidor.
 - **Status que se corrige sozinho** — chegou no último capítulo vira
   `Finalizado` e grava a data; voltou atrás, volta pra `Lendo`.
 - **Tema claro/escuro**, guardado no navegador.
@@ -222,7 +223,6 @@ estar errados.
 
 ## Próximos passos
 
-- Contagem do grupo acompanhando a busca, e aviso quando nada é encontrado
 - Validador de senha exigindo pelo menos uma letra. Hoje o Django só recusa senha
   **inteiramente numérica** (`NumericPasswordValidator`), então `1234567!` é aceita.
   Exigir uma letra é regra comum em outros sites e precisaria de um validador próprio
