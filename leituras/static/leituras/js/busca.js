@@ -1,6 +1,7 @@
 const campo = document.getElementById('busca');
 const itens = document.querySelectorAll('.item');
 const secoes = document.querySelectorAll('.grupo');
+const semResultado = document.getElementById('sem-resultado');
 
 campo.addEventListener('input', () => {
     const termo = campo.value.toLowerCase();
@@ -15,4 +16,6 @@ campo.addEventListener('input', () => {
         secao.querySelector('.grupo__contagem').textContent = visiveis.length;
         secao.hidden = visiveis.length === 0;
     });
+    
+    semResultado.hidden = document.querySelectorAll('.item:not([hidden])').length > 0;
 });
