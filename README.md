@@ -185,6 +185,13 @@ convidar os dois a discordarem — uma obra marcada `Manhwa` com grupo `Matéria
 e nenhum jeito de saber qual está certo. A ordem das seções na tela também vem
 desse dicionário, então não existe uma segunda lista pra ficar pra trás.
 
+**A senha precisa de uma letra, e o validador numérico saiu.** O Django só
+recusava senha *inteiramente* numérica, então `1234567!` passava. O
+`ExigeLetraValidator` (`contas/validators.py`) cobre esse caso e tudo o que o
+`NumericPasswordValidator` barrava — senha com letra nunca é só número. Com os
+dois na lista, `83920174` mostrava duas mensagens dizendo a mesma coisa; o
+antigo saiu do `AUTH_PASSWORD_VALIDATORS`.
+
 As onze decisões do projeto, cada uma em pergunta e resposta com o lugar onde
 mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 
@@ -194,7 +201,7 @@ mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 python manage.py test
 ```
 
-Quarenta e três testes, sem dependência externa — o Django cria e destrói um banco
+Quarenta e quatro testes, sem dependência externa — o Django cria e destrói um banco
 próprio a cada execução.
 
 Cobrem o que **decide** alguma coisa:
@@ -217,17 +224,17 @@ Cobrem o que **decide** alguma coisa:
   navegável não desenha título alheio.
 - **Os filtros da API** — pedir um status traz só as leituras dele, e um valor
   fora do `choices` (`lendo`, minúsculo) dá 400.
+- **A senha sem letra** — `1234567!` não cria conta e a mensagem do validador
+  aparece na tela. O teste procura a frase do **erro**, não "pelo menos uma letra":
+  essa parte também está no texto de ajuda, que aparece sempre — se o formulário
+  fosse recusado por outro motivo (um campo com nome errado no POST, por exemplo),
+  o teste passaria verde sem o validador ter dito nada.
 
 Ficaram de fora de propósito `__str__` e o admin: não decidem nada, não têm como
 estar errados.
 
 ## Próximos passos
 
-- Validador de senha exigindo pelo menos uma letra. Hoje o Django só recusa senha
-  **inteiramente numérica** (`NumericPasswordValidator`), então `1234567!` é aceita.
-  Exigir uma letra é regra comum em outros sites e precisaria de um validador próprio
-  no `AUTH_PASSWORD_VALIDATORS` — enquanto não existe, o texto de ajuda do formulário
-  descreve só o que é de fato validado.
 - Mover as rotas do `leituras` para um `leituras/urls.py` próprio, como no `contas`.
   Hoje elas moram no `config/urls.py` e funcionam — a mudança é organização, não correção,
   então vale pegar carona na próxima vez que o app for mexido, não parar para fazer sozinha.
