@@ -27,6 +27,14 @@ class CadastroTestCase(TestCase):
         self.assertEqual(resposta.status_code,200)
         self.assertFalse(get_user_model().objects.filter(username='novato').exists())
 
+    def test_cadastro_com_senha_sem_letra_nao_cria_usuario(self):
+        resposta = self.client.post(reverse('cadastro'),{
+            'username':'novato',
+            'password1': '1234567!',
+            'password2': '1234567!',
+        })
+        self.assertContains(resposta, "A senha deve conter pelo menos uma letra.")
+        self.assertFalse(get_user_model().objects.filter(username='novato').exists())
 
     def test_logout_derruba_a_sessao(self):
         usuario = get_user_model().objects.create_user(username='soldado', password='novato23')

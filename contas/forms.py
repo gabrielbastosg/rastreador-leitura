@@ -10,6 +10,6 @@ class CadastroForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].help_text = ''
-        self.fields['password1'].help_text = 'Mínimo de 8 caracteres, e não pode ser só números.'
+        self.fields['password1'].help_text = 'Mínimo de 8 caracteres, e deve conter pelo menos uma letra.'
         self.fields['password2'].help_text = ''
 
