@@ -36,6 +36,16 @@ class CadastroTestCase(TestCase):
         self.assertContains(resposta, "A senha deve conter pelo menos uma letra.")
         self.assertFalse(get_user_model().objects.filter(username='novato').exists())
 
+    def test_erro_de_regra_de_senha_aparece_no_primeiro_campo(self):
+        resposta = self.client.post(reverse('cadastro'),{
+            'username':'novato',
+            'password1': '1234567!',
+            'password2': '1234567!',
+        })
+
+        self.assertIn('A senha deve conter pelo menos uma letra.', resposta.context['form'].errors['password1'])
+
+
     def test_logout_derruba_a_sessao(self):
         usuario = get_user_model().objects.create_user(username='soldado', password='novato23')
         self.client.force_login(usuario)
