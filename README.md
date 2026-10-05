@@ -192,6 +192,15 @@ recusava senha *inteiramente* numérica, então `1234567!` passava. O
 dois na lista, `83920174` mostrava duas mensagens dizendo a mesma coisa; o
 antigo saiu do `AUTH_PASSWORD_VALIDATORS`.
 
+**Os erros de regra de senha ficam no primeiro campo.** O `UserCreationForm`
+valida a senha pelo `password2` e pendura ali tudo o que os validadores dizem —
+"muito curta" aparecia embaixo de *Confirmação de senha*, e a pessoa não sabia
+qual campo corrigir. O `CadastroForm` sobrescreve `validate_password_for_user`
+só para trocar o campo para `password1`; o "os dois campos não correspondem"
+continua embaixo da confirmação, que é onde ele faz sentido. Efeito a mais: com
+senhas diferentes, os dois avisos aparecem juntos, e dá pra consertar tudo de uma
+vez. Foi achado clicando no botão, não lendo código — tecnicamente funcionava.
+
 As onze decisões do projeto, cada uma em pergunta e resposta com o lugar onde
 mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 
@@ -201,7 +210,7 @@ mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 python manage.py test
 ```
 
-Quarenta e quatro testes, sem dependência externa — o Django cria e destrói um banco
+Quarenta e cinco testes, sem dependência externa — o Django cria e destrói um banco
 próprio a cada execução.
 
 Cobrem o que **decide** alguma coisa:
@@ -229,6 +238,10 @@ Cobrem o que **decide** alguma coisa:
   essa parte também está no texto de ajuda, que aparece sempre — se o formulário
   fosse recusado por outro motivo (um campo com nome errado no POST, por exemplo),
   o teste passaria verde sem o validador ter dito nada.
+- **O campo do erro de senha** — o erro do validador está na lista de
+  `errors['password1']`, não só em algum lugar da página. O teste de cima não pega
+  isso: procura a frase no HTML inteiro, então passava com o erro embaixo do campo
+  errado. Sem o conserto, este quebra com `KeyError: 'password1'`.
 
 Ficaram de fora de propósito `__str__` e o admin: não decidem nada, não têm como
 estar errados.
@@ -246,10 +259,3 @@ estar errados.
   `base.html` e `_campos.html`: aí não é um app dependendo do outro, são os dois usando o comum.
   **Regra adotada:** lógica se reaproveita; layout pequeno se copia — um parcial de apresentação
   de 12 linhas não vale o acoplamento entre apps.
-- Separar os erros do campo de confirmação de senha, no cadastro. O `UserCreationForm` valida a
-  senha depois que os dois campos batem e pendura **tudo** em `password2` — tanto "esta senha é
-  muito curta" quanto "os dois campos de senha não correspondem". Na tela, os erros de regra de
-  senha aparecem embaixo de *Confirmação de senha*, e a pessoa não sabe qual campo corrigir.
-  O conserto é mover só os erros de validador para `password1`, deixando o de correspondência onde
-  está. Encontrado clicando no botão, não lendo código — nenhum teste pegaria, porque
-  tecnicamente funciona.
