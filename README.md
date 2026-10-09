@@ -201,6 +201,13 @@ continua embaixo da confirmação, que é onde ele faz sentido. Efeito a mais: c
 senhas diferentes, os dois avisos aparecem juntos, e dá pra consertar tudo de uma
 vez. Foi achado clicando no botão, não lendo código — tecnicamente funcionava.
 
+**Cada app guarda as próprias rotas.** As telas do `leituras` moram em
+`leituras/urls.py`, como as do `contas`, e o `config/urls.py` só faz `include`. O
+include é com `''`, então nenhum endereço mudou, e não tem `app_name`: com ele, o
+`lista-leituras` viraria `leituras:lista-leituras` e todo `{% url %}` dos templates
+quebraria. O `router` da API ficou no `config`, porque é a porta de entrada de `/api/`.
+A mudança foi só organização: os 45 testes passaram sem nenhum ser tocado.
+
 As onze decisões do projeto, cada uma em pergunta e resposta com o lugar onde
 mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 
@@ -248,10 +255,6 @@ estar errados.
 
 ## Próximos passos
 
-- Mover as rotas do `leituras` para um `leituras/urls.py` próprio, como no `contas`.
-  Hoje elas moram no `config/urls.py` e funcionam — a mudança é organização, não correção,
-  então vale pegar carona na próxima vez que o app for mexido, não parar para fazer sozinha.
-  **Regra adotada:** não mudar o que funciona, mas não repetir o padrão antigo em código novo.
 - `base.html` e diretório de templates do projeto. Hoje cada template repete o HTML inteiro
   (`<head>`, script do tema, header com o menu de tema), e o `_campos.html` está duplicado entre
   `leituras` e `contas` — cópia deliberada, para o app `contas` não depender do `leituras`.

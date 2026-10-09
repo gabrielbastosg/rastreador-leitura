@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from leituras.views import ObraViewSet, LeituraViewSet, lista_leituras, mover_capitulo,nova_obra,editar_leitura,excluir_leitura,mudar_status
+from leituras.views import ObraViewSet, LeituraViewSet
 
 
 router = DefaultRouter()
@@ -26,12 +26,7 @@ router.register('leituras', LeituraViewSet,basename='leitura')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    path('', lista_leituras, name='lista-leituras'),
-    path('leituras/<int:pk>/mover/', mover_capitulo, name='mover-capitulo'),
-    path('obras/nova/', nova_obra, name='nova-obra'),
-    path('leituras/<int:pk>/editar/', editar_leitura, name='editar-leitura'),
-    path('leituras/<int:pk>/excluir/', excluir_leitura, name='excluir-leitura'),
-    path('leituras/<int:pk>/status/',mudar_status, name='mudar-status'),
+    path('api/', include(router.urls)),  
     path('contas/', include('contas.urls')),
+    path('', include('leituras.urls')),
 ]
