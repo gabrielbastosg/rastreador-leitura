@@ -36,7 +36,7 @@ existe campo `grupo` no banco.*
   ida ao servidor.
 - **Status que se corrige sozinho** — chegou no último capítulo vira
   `Finalizado` e grava a data; voltou atrás, volta pra `Lendo`.
-- **Tema claro/escuro**, guardado no navegador.
+- **Tema claro, escuro ou sépia** em todas as telas, guardado no navegador.
 - **API REST** (CRUD) em `/api/` — autenticada, e cada pessoa só enxerga a
   própria estante.
 - **Admin** do Django pra cadastro em massa.
@@ -208,6 +208,8 @@ include é com `''`, então nenhum endereço mudou, e não tem `app_name`: com e
 quebraria. O `router` da API ficou no `config`, porque é a porta de entrada de `/api/`.
 A mudança foi só organização: os 45 testes passaram sem nenhum ser tocado.
 
+**O layout comum mora fora dos apps.** O `base.html` fica em `templates/`, na raiz, e o Django acha a pasta pelo `DIRS` do `TEMPLATES`. Antes ele morava dentro do `leituras`, e o `contas` não usava para não depender do outro app — então login e cadastro repetiam o HTML inteiro e ficaram sem o menu de tema. Agora as quatro telas estendem o mesmo `base.html`. O `_campos.html` continua copiado em cada app, de propósito: lógica se reaproveita, layout pequeno se copia — um parcial de 12 linhas não vale o acoplamento, e as duas cópias já nem são iguais.
+
 As onze decisões do projeto, cada uma em pergunta e resposta com o lugar onde
 mora no código: [`docs/decisoes-perguntas.md`](docs/decisoes-perguntas.md).
 
@@ -255,10 +257,4 @@ estar errados.
 
 ## Próximos passos
 
-- `base.html` e diretório de templates do projeto. Hoje cada template repete o HTML inteiro
-  (`<head>`, script do tema, header com o menu de tema), e o `_campos.html` está duplicado entre
-  `leituras` e `contas` — cópia deliberada, para o app `contas` não depender do `leituras`.
-  A solução boa é um diretório de templates fora dos apps (`DIRS` no `TEMPLATES`) guardando
-  `base.html` e `_campos.html`: aí não é um app dependendo do outro, são os dois usando o comum.
-  **Regra adotada:** lógica se reaproveita; layout pequeno se copia — um parcial de apresentação
-  de 12 linhas não vale o acoplamento entre apps.
+- Deploy no Render, para a estante funcionar fora do meu computador.
