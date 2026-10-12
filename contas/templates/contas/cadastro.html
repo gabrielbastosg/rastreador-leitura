@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block titulo %}Criar Conta{% endblock %}
+{% block titulo %}Criar conta{% endblock %}
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'leituras/css/form.css' %}">
@@ -9,7 +9,7 @@
 
 {% block cabecalho %}
     <a class="voltar" href="{% url 'lista-leituras' %}">← estante</a>
-    <h1>Criar Conta</h1>
+    <h1>Criar conta</h1>
 {% endblock %}
 
 {% block conteudo %}
@@ -22,7 +22,7 @@
 
         {% include 'contas/_campos.html' %}
 
-        <button class="botao-salvar" type="submit">Criar Conta</button>
+        <button class="botao-salvar" type="submit">Criar conta</button>
     </form>
 
     <p class="secao">Já tem conta? <a href="{% url 'login' %}">Entrar</a></p>
