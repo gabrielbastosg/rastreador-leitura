@@ -1,13 +1,22 @@
 /* ---------- voltar ---------- */
 .voltar {
-    display: inline-block;
-    margin-bottom: 4px;
+    display: inline-flex;
+    align-items : center;
+    margin-bottom: 12px;
+    padding: 6px 14px;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    background: var(--superficie);
     color: var(--texto-fraco);
     text-decoration: none;
     font-size: 14px;
+    transition: border-color .2s ease, color .2s ease;
 }
 
-.voltar:hover { color: var(--destaque); }
+.voltar:hover{
+    border-color: var(--destaque);
+    color: var(--destaque);
+}
 
 /* ---------- formulario ---------- */
 .formulario {
