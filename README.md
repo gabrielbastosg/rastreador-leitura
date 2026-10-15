@@ -255,6 +255,9 @@ Cobrem o que **decide** alguma coisa:
 Ficaram de fora de propósito `__str__` e o admin: não decidem nada, não têm como
 estar errados.
 
-## Próximos passos
+## Ideias pra depois
+
+O projeto está fechado por enquanto: tudo que eu queria dele está pronto e coberto
+por teste. Fica anotado o que eu faria se voltasse a ele:
 
 - Deploy no Render, para a estante funcionar fora do meu computador.
