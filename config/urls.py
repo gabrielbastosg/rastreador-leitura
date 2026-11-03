@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from leituras.views import ObraViewSet, LeituraViewSet
-
+from rest_framework.authtoken.views import obtain_auth_token
 
 router = DefaultRouter()
 router.register('obras', ObraViewSet,basename='obra')
@@ -29,4 +29,6 @@ urlpatterns = [
     path('api/', include(router.urls)),  
     path('contas/', include('contas.urls')),
     path('', include('leituras.urls')),
+    path('api/token/',obtain_auth_token),
+    
 ]
