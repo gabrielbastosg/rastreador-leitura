@@ -1,6 +1,8 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.views.decorators.http import require_POST
-from rest_framework import viewsets
+from rest_framework import viewsets,status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Obra, Leitura
@@ -31,6 +33,16 @@ class LeituraViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Leitura.objects.filter(obra__dono=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def avancar(self, request, pk=None):
+        leitura = self.get_object()
+        if not leitura.mover(1):
+            return Response(
+                {'erro':'Essa leitura ja esta no ultimo capitulo.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        return Response(self.get_serializer(leitura).data)    
 
 @login_required
 def lista_leituras(request):
