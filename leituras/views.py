@@ -61,24 +61,7 @@ def voltar_para(leitura):
 def mover_capitulo(request, pk):
     leitura = get_object_or_404(Leitura, pk=pk,obra__dono=request.user)
     passo = 1 if request.POST.get('passo') == '1' else -1
-    novo = leitura.capitulo_atual + passo
-    total = leitura.obra.total_capitulos
-
-    if novo < 0 or (total is not None and novo > total):
-        return voltar_para(leitura)
-
-    leitura.capitulo_atual = novo
-    leitura.avancado_em = timezone.now()
-
-    if total is not None:
-        if novo == total:
-            leitura.status = 'Finalizado'
-            leitura.encerrado_em = timezone.localdate()
-        elif leitura.status == 'Finalizado':
-            leitura.status = 'Lendo'
-            leitura.encerrado_em = None
-
-    leitura.save()
+    leitura.mover(passo)
     return voltar_para(leitura)
 
 @login_required

@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
+from django.utils import timezone
 # Create your models here.
 class Obra(models.Model):
     TIPOS=[
@@ -73,6 +74,27 @@ class Leitura(models.Model):
                 'capitulo_atual': f'"{self.obra.titulo}" tem {total} capítulos — '
                                   f'não dá pra estar no {self.capitulo_atual}.'
             })
+
+    def mover(self,passo):
+        novo = self.capitulo_atual + passo
+        total = self.obra.total_capitulos
+
+        if novo < 0 or (total is not None and novo > total):
+            return False
+
+        self.capitulo_atual = novo
+        self.avancado_em = timezone.now()
+
+        if total is not None:
+            if novo == total:
+                self.status = 'Finalizado'
+                self.encerrado_em = timezone.localdate()
+            elif self.status == 'Finalizado':
+                self.status = 'Lendo'
+                self.encerrado_em = None
+
+        self.save()
+        return True   
 
     @property
     def estrelas(self):
